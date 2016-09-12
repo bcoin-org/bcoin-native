@@ -1,0 +1,30 @@
+{
+  "name": "bcoin-native",
+  "version": "0.0.1",
+  "description": "Native bindings to bitcoin-related functions",
+  "keywords": [
+    "bcoin",
+    "bitcoin"
+  ],
+  "bugs": {
+    "url": "https://github.com/bcoin-org/bcoin-native/issues"
+  },
+  "homepage": "https://github.com/bcoin-org/bcoin-native",
+  "license": "MIT",
+  "author": "Christopher Jeffrey <chjjeffrey@gmail.com>",
+  "main": "./index.js",
+  "repository": "git://github.com/bcoin-org/bcoin-native.git",
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "test": "node test.js",
+    "bench": "node bench.js"
+  },
+  "dependencies": {
+    "bindings": "1.2.1",
+    "nan": "2.4.0"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "gypfile": true
+}
