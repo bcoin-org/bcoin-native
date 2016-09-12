@@ -162,7 +162,9 @@ bcn_decode_b58(
   while (i < b256len)
     (*data)[j++] = b256[i++];
 
-  *datalen = (size_t)dlen;
+  assert(j == dlen);
+
+  *datalen = (size_t)j;
 
   free(b256);
 
