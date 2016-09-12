@@ -150,13 +150,19 @@ bcn_decode_b58(
 
   dlen = zeroes + (b256len - i);
   *data = (unsigned char *)malloc(dlen);
-  *datalen = (size_t)dlen;
+
+  if (*data == NULL) {
+    free(b256);
+    return false;
+  }
 
   for (j = 0; j < zeroes; j++)
     (*data)[j] = 0;
 
   while (i < b256len)
     (*data)[j++] = b256[i++];
+
+  *datalen = (size_t)dlen;
 
   free(b256);
 
@@ -218,6 +224,11 @@ bcn_encode_b58(
     i++;
 
   *str = (unsigned char *)malloc(zeroes + (b58len - i));
+
+  if (*str == NULL) {
+    free(b58);
+    return false;
+  }
 
   for (j = 0; j < zeroes; j++)
     (*str)[j] = '1';
