@@ -1,5 +1,5 @@
 /**
- * supersha - sha256 bindings to libsecp256k1
+ * bcoin-native - fast native bindings to bitcoin functions.
  * Copyright (c) 2016, Christopher Jeffrey (MIT License)
  */
 
@@ -453,4 +453,4 @@ NAN_MODULE_INIT(init) {
   ChaCha20::Init(target);
 }
 
-NODE_MODULE(supersha, init)
+NODE_MODULE(bcn, init)
