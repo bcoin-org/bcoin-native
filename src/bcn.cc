@@ -15,6 +15,7 @@
 #include "scrypt_async.h"
 #include "murmur3.h"
 #include "siphash.h"
+#include "bcn.h"
 
 NAN_METHOD(hash) {
   if (info.Length() < 2)
@@ -386,16 +387,16 @@ NAN_METHOD(siphash256) {
     Nan::CopyBuffer((char *)&output[0], 8).ToLocalChecked());
 }
 
-NAN_METHOD(merkle_tree) {
+NAN_METHOD(build_merkle_tree) {
   if (info.Length() < 1)
-    return Nan::ThrowError("merkle_tree() requires arguments.");
+    return Nan::ThrowError("build_merkle_tree() requires arguments.");
 
   if (!info[0]->IsArray())
     return Nan::ThrowTypeError("First argument must be an Array.");
 
   v8::Local<v8::Array> tree = v8::Local<v8::Array>::Cast(info[0]);
-  unsigned int t = tree->Length();
-  unsigned int size = t;
+  unsigned int len = tree->Length();
+  unsigned int size = len;
   unsigned int i, j, i2;
   unsigned char *left, *right;
   unsigned char hash[32];
@@ -409,6 +410,12 @@ NAN_METHOD(merkle_tree) {
       lbuf = tree->Get(j + i).As<v8::Object>();
       rbuf = tree->Get(j + i2).As<v8::Object>();
 
+      if (!node::Buffer::HasInstance(lbuf) || node::Buffer::Length(lbuf) != 32)
+        return Nan::ThrowTypeError("Left node is not a buffer.");
+
+      if (!node::Buffer::HasInstance(rbuf) || node::Buffer::Length(rbuf) != 32)
+        return Nan::ThrowTypeError("Right node is not a buffer.");
+
       left = (unsigned char *)node::Buffer::Data(lbuf);
       right = (unsigned char *)node::Buffer::Data(rbuf);
 
@@ -418,20 +425,78 @@ NAN_METHOD(merkle_tree) {
         return;
       }
 
-      bcn_hash256_lr(left, right, hash);
+      if (!bcn_hash256_lr(left, right, hash))
+        return Nan::ThrowError("Cannot hash nodes.");
 
       hbuf = Nan::CopyBuffer((char *)&hash[0], 32).ToLocalChecked();
-      tree->Set(t++, hbuf);
+      tree->Set(len++, hbuf);
     }
     j += size;
   }
 
-  if (t == 0) {
+  if (len == 0) {
     info.GetReturnValue().Set(Nan::Null());
     return;
   }
 
   info.GetReturnValue().Set(tree);
+}
+
+NAN_METHOD(check_merkle_branch) {
+  if (info.Length() < 3)
+    return Nan::ThrowError("check_merkle_branch() requires arguments.");
+
+  if (!node::Buffer::HasInstance(info[0]))
+    return Nan::ThrowTypeError("First argument must be a Buffer.");
+
+  if (!info[1]->IsArray())
+    return Nan::ThrowTypeError("Second argument must be an Array.");
+
+  if (!info[2]->IsNumber())
+    return Nan::ThrowTypeError("Second argument must be a Number.");
+
+  v8::Local<v8::Object> hbuf = info[0].As<v8::Object>();
+  v8::Local<v8::Array> branch = v8::Local<v8::Array>::Cast(info[1]);
+  v8::Local<v8::Value> ib = v8::Local<v8::Value>::Cast(info[2]);
+
+  if (!node::Buffer::HasInstance(hbuf) || node::Buffer::Length(hbuf) != 32)
+    return Nan::ThrowTypeError("Node is not a buffer.");
+
+  unsigned int index = (unsigned int)v8::Local<v8::Integer>::Cast(ib)->Value();
+  unsigned int len = branch->Length();
+  unsigned int i;
+  unsigned char hash[32];
+  unsigned char *otherside;
+
+  if (len == 0) {
+    info.GetReturnValue().Set(hbuf);
+    return;
+  }
+
+  memcpy(hash, node::Buffer::Data(hbuf), 32);
+
+  for (i = 0; i < len; i++) {
+    hbuf = branch->Get(i).As<v8::Object>();
+
+    if (!node::Buffer::HasInstance(hbuf) || node::Buffer::Length(hbuf) != 32)
+      return Nan::ThrowTypeError("Node is not a buffer.");
+
+    otherside = (unsigned char *)node::Buffer::Data(hbuf);
+
+    if (index & 1) {
+      if (!bcn_hash256_lr(otherside, hash, hash))
+        return Nan::ThrowError("Cannot hash nodes.");
+    } else {
+      if (!bcn_hash256_lr(hash, otherside, hash))
+        return Nan::ThrowError("Cannot hash nodes.");
+    }
+
+    index >>= 1;
+  }
+
+  hbuf = Nan::CopyBuffer((char *)&hash[0], 32).ToLocalChecked();
+
+  info.GetReturnValue().Set(hbuf);
 }
 
 NAN_MODULE_INIT(init) {
@@ -447,10 +512,11 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "murmur3", murmur3);
   Nan::Export(target, "siphash", siphash);
   Nan::Export(target, "siphash256", siphash256);
-  Nan::Export(target, "buildMerkleTree", merkle_tree);
+  Nan::Export(target, "buildMerkleTree", build_merkle_tree);
+  Nan::Export(target, "checkMerkleBranch", check_merkle_branch);
 
-  Poly1305::Init(target);
   ChaCha20::Init(target);
+  Poly1305::Init(target);
 }
 
 NODE_MODULE(bcn, init)
