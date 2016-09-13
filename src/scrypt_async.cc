@@ -8,9 +8,9 @@ ScryptWorker::ScryptWorker (
   const unsigned int passlen,
   const unsigned char *salt,
   size_t saltlen,
-  uint64_t N,
-  uint64_t r,
-  uint64_t p,
+  unsigned long long N,
+  unsigned long long r,
+  unsigned long long p,
   size_t keylen,
   Nan::Callback *callback
 ) : Nan::AsyncWorker(callback)

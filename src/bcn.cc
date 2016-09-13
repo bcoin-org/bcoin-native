@@ -223,9 +223,12 @@ NAN_METHOD(scrypt) {
   const unsigned int passlen = (const unsigned int)node::Buffer::Length(pbuf);
   const unsigned char *salt = (const unsigned char *)node::Buffer::Data(sbuf);
   size_t saltlen = (size_t)node::Buffer::Length(sbuf);
-  uint64_t N = (uint64_t)v8::Local<v8::Integer>::Cast(nval)->Value();
-  uint64_t r = (uint64_t)v8::Local<v8::Integer>::Cast(rval)->Value();
-  uint64_t p = (uint64_t)v8::Local<v8::Integer>::Cast(pval)->Value();
+  unsigned long long N =
+    (unsigned long long)v8::Local<v8::Integer>::Cast(nval)->Value();
+  unsigned long long r =
+    (unsigned long long)v8::Local<v8::Integer>::Cast(rval)->Value();
+  unsigned long long p =
+    (unsigned long long)v8::Local<v8::Integer>::Cast(pval)->Value();
   size_t keylen = (size_t)v8::Local<v8::Integer>::Cast(kval)->Value();
 
   unsigned char *key = (unsigned char *)malloc(keylen);
@@ -283,9 +286,12 @@ NAN_METHOD(scrypt_async) {
   const unsigned int passlen = (const unsigned int)node::Buffer::Length(pbuf);
   const unsigned char *salt = (const unsigned char *)node::Buffer::Data(sbuf);
   size_t saltlen = (size_t)node::Buffer::Length(sbuf);
-  uint64_t N = (uint64_t)v8::Local<v8::Integer>::Cast(nval)->Value();
-  uint64_t r = (uint64_t)v8::Local<v8::Integer>::Cast(rval)->Value();
-  uint64_t p = (uint64_t)v8::Local<v8::Integer>::Cast(pval)->Value();
+  unsigned long long N =
+    (unsigned long long)v8::Local<v8::Integer>::Cast(nval)->Value();
+  unsigned long long r =
+    (unsigned long long)v8::Local<v8::Integer>::Cast(rval)->Value();
+  unsigned long long p =
+    (unsigned long long)v8::Local<v8::Integer>::Cast(pval)->Value();
   size_t keylen = (size_t)v8::Local<v8::Integer>::Cast(kval)->Value();
 
   ScryptWorker* worker = new ScryptWorker(

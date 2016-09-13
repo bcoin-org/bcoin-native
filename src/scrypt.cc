@@ -9,16 +9,19 @@ bcn_scrypt(
   const unsigned int passlen,
   const unsigned char *salt,
   size_t saltlen,
-  uint64_t N,
-  uint64_t r,
-  uint64_t p,
+  unsigned long long N,
+  unsigned long long r,
+  unsigned long long p,
   unsigned char *key,
   size_t keylen
 ) {
   int result = crypto_scrypt(
     (uint8_t *)pass, passlen,
     (uint8_t *)salt, saltlen,
-    N, r, p, (uint8_t *)key,
+    (uint64_t)N,
+    (uint64_t)r,
+    (uint64_t)p,
+    (uint8_t *)key,
     keylen);
 
   return result == 0;
@@ -32,9 +35,9 @@ bcn_scrypt(
   const unsigned int passlen,
   const unsigned char *salt,
   size_t saltlen,
-  uint64_t N,
-  uint64_t r,
-  uint64_t p,
+  unsigned long long N,
+  unsigned long long r,
+  unsigned long long p,
   size_t keylen,
   unsigned char *key
 ) {

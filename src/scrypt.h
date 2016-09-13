@@ -10,9 +10,9 @@ bcn_scrypt(
   const unsigned int passlen,
   const unsigned char *salt,
   size_t saltlen,
-  uint64_t N,
-  uint64_t r,
-  uint64_t p,
+  unsigned long long N,
+  unsigned long long r,
+  unsigned long long p,
   unsigned char *key,
   size_t keylen
 );
