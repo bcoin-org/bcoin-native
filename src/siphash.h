@@ -6,17 +6,27 @@
 
 void
 bcn_siphash24(
-  const uint8_t *data,
+  const unsigned char *data,
   size_t len,
-  const uint8_t *key,
-  const uint8_t *out,
-  uint8_t shift
+  const unsigned char *key,
+  const unsigned char *out,
+  unsigned char shift
 );
 
 void
-bcn_siphash(const uint8_t *data, size_t len, const uint8_t *key, uint8_t *out);
+bcn_siphash(
+  const unsigned char *data,
+  size_t len,
+  const unsigned char *key,
+  unsigned char *out
+);
 
 void
-bcn_siphash256(const uint8_t *data, size_t len, const uint8_t *key, uint8_t *out);
+bcn_siphash256(
+  const unsigned char *data,
+  size_t len,
+  const unsigned char *key,
+  unsigned char *out
+);
 
 #endif

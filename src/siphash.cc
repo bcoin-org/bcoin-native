@@ -14,11 +14,11 @@
 
 void
 bcn_siphash24(
-  const uint8_t *data,
+  const unsigned char *data,
   size_t len,
-  const uint8_t *key,
-  uint8_t *out,
-  uint8_t shift
+  const unsigned char *key,
+  unsigned char *out,
+  unsigned char shift
 ) {
   uint64_t k0 = READU64(key + 0);
   uint64_t k1 = READU64(key + 8);
@@ -77,11 +77,21 @@ bcn_siphash24(
 }
 
 void
-bcn_siphash(const uint8_t *data, size_t len, const uint8_t *key, uint8_t *out) {
+bcn_siphash(
+  const unsigned char *data,
+  size_t len,
+  const unsigned char *key,
+  unsigned char *out
+) {
   return bcn_siphash24(data, len, key, out, 56);
 }
 
 void
-bcn_siphash256(const uint8_t *data, size_t len, const uint8_t *key, uint8_t *out) {
+bcn_siphash256(
+  const unsigned char *data,
+  size_t len,
+  const unsigned char *key,
+  unsigned char *out
+) {
   return bcn_siphash24(data, len, key, out, 59);
 }

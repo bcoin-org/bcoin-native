@@ -341,10 +341,10 @@ NAN_METHOD(siphash) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
+  const unsigned char *data = (const unsigned char *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  const uint8_t *kdata = (const uint8_t *)node::Buffer::Data(kbuf);
+  const unsigned char *kdata = (const unsigned char *)node::Buffer::Data(kbuf);
   size_t klen = node::Buffer::Length(kbuf);
 
   if (klen < 16)
@@ -371,10 +371,10 @@ NAN_METHOD(siphash256) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
+  const unsigned char *data = (const unsigned char *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  const uint8_t *kdata = (const uint8_t *)node::Buffer::Data(kbuf);
+  const unsigned char *kdata = (const unsigned char *)node::Buffer::Data(kbuf);
   size_t klen = node::Buffer::Length(kbuf);
 
   if (klen < 16)
