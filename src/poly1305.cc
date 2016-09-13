@@ -46,7 +46,7 @@ NAN_METHOD(Poly1305::Init) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
   if (len != 32)
@@ -66,7 +66,7 @@ NAN_METHOD(Poly1305::Update) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
   poly1305_update(&poly->ctx, data, len);
@@ -75,7 +75,7 @@ NAN_METHOD(Poly1305::Update) {
 NAN_METHOD(Poly1305::Finish) {
   Poly1305* poly = ObjectWrap::Unwrap<Poly1305>(info.Holder());
 
-  unsigned char mac[16];
+  uint8_t mac[16];
 
   poly1305_finish(&poly->ctx, mac);
 
@@ -97,16 +97,16 @@ NAN_METHOD(Poly1305::Auth) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("Second argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  const unsigned char *kdata = (unsigned char *)node::Buffer::Data(kbuf);
+  const uint8_t *kdata = (uint8_t *)node::Buffer::Data(kbuf);
   size_t klen = node::Buffer::Length(kbuf);
 
   if (klen != 32)
     return Nan::ThrowError("Invalid key size.");
 
-  unsigned char mac[16];
+  uint8_t mac[16];
 
   poly1305_auth(mac, data, len, kdata);
 
@@ -128,10 +128,10 @@ NAN_METHOD(Poly1305::Verify) {
   if (!node::Buffer::HasInstance(bbuf))
     return Nan::ThrowTypeError("Second argument must be a Buffer.");
 
-  const unsigned char *adata = (unsigned char *)node::Buffer::Data(abuf);
+  const uint8_t *adata = (uint8_t *)node::Buffer::Data(abuf);
   size_t alen = node::Buffer::Length(abuf);
 
-  const unsigned char *bdata = (unsigned char *)node::Buffer::Data(bbuf);
+  const uint8_t *bdata = (uint8_t *)node::Buffer::Data(bbuf);
   size_t blen = node::Buffer::Length(bbuf);
 
   if (alen != 16)
@@ -140,7 +140,7 @@ NAN_METHOD(Poly1305::Verify) {
   if (blen != 16)
     return Nan::ThrowError("Invalid mac size.");
 
-  int result = poly1305_verify(adata, bdata);
+  int32_t result = poly1305_verify(adata, bdata);
 
   info.GetReturnValue().Set(Nan::New<v8::Boolean>((bool)result));
 }

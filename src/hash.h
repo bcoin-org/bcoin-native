@@ -15,71 +15,71 @@
 bool
 bcn_hash(
   const char *name,
-  const unsigned char *data,
-  unsigned int len,
-  unsigned char *rdata,
-  unsigned int *rlen
+  const uint8_t *data,
+  uint32_t len,
+  uint8_t *rdata,
+  uint32_t *rlen
 );
 
 bool
 bcn_hmac(
   const char *name,
-  const unsigned char *data,
-  unsigned int len,
-  const unsigned char *kdata,
-  unsigned int klen,
-  unsigned char *rdata,
-  unsigned int *rlen
+  const uint8_t *data,
+  uint32_t len,
+  const uint8_t *kdata,
+  uint32_t klen,
+  uint8_t *rdata,
+  uint32_t *rlen
 );
 
 #if 0
 bool
 bcn_hkdf_extract(
   const char *name,
-  const unsigned char *ikm,
-  unsigned int ilen,
-  const unsigned char *salt,
-  unsigned int slen,
-  unsigned char *rdata,
-  unsigned int *rlen
+  const uint8_t *ikm,
+  uint32_t ilen,
+  const uint8_t *salt,
+  uint32_t slen,
+  uint8_t *rdata,
+  uint32_t *rlen
 );
 
 bool
 bcn_hkdf_expand(
   const char *name,
-  const unsigned char *prk,
-  unsigned int plen,
-  const unsigned char *info,
-  unsigned int ilen,
-  unsigned char *rdata,
-  unsigned int rlen
+  const uint8_t *prk,
+  uint32_t plen,
+  const uint8_t *info,
+  uint32_t ilen,
+  uint8_t *rdata,
+  uint32_t rlen
 );
 #endif
 
 bool
-bcn_sha256(const unsigned char *data, unsigned int len, unsigned char *out);
+bcn_sha256(const uint8_t *data, uint32_t len, uint8_t *out);
 
 bool
-bcn_rmd160(const unsigned char *data, unsigned int len, unsigned char *out);
+bcn_rmd160(const uint8_t *data, uint32_t len, uint8_t *out);
 
 bool
-bcn_hash160(const unsigned char *data, unsigned int len, unsigned char *out);
+bcn_hash160(const uint8_t *data, uint32_t len, uint8_t *out);
 
 bool
-bcn_hash256(const unsigned char *data, unsigned int len, unsigned char *out);
+bcn_hash256(const uint8_t *data, uint32_t len, uint8_t *out);
 
 bool
-bcn_hash256_lr(const unsigned char *left, const unsigned char *right, unsigned char *out);
+bcn_hash256_lr(const uint8_t *left, const uint8_t *right, uint8_t *out);
 
 bool
 bcn_pbkdf2(
   const char *name,
-  const unsigned char *data,
-  unsigned int len,
-  const unsigned char *salt,
-  unsigned int slen,
-  unsigned int iter,
-  unsigned char *rdata,
-  unsigned int rlen
+  const uint8_t *data,
+  uint32_t len,
+  const uint8_t *salt,
+  uint32_t slen,
+  uint32_t iter,
+  uint8_t *rdata,
+  uint32_t rlen
 );
 #endif

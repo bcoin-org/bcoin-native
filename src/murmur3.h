@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-unsigned int
-bcn_murmur3(const unsigned char *data, size_t len, unsigned int seed);
+uint32_t
+bcn_murmur3(const uint8_t *data, size_t len, uint32_t seed);
 
 #endif

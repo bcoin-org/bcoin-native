@@ -6,14 +6,14 @@
 
 bool
 bcn_scrypt(
-  const char *pass,
-  const unsigned int passlen,
-  const unsigned char *salt,
+  const uint8_t *pass,
+  const uint32_t passlen,
+  const uint8_t *salt,
   size_t saltlen,
-  unsigned long long N,
-  unsigned long long r,
-  unsigned long long p,
-  unsigned char *key,
+  uint64_t N,
+  uint64_t r,
+  uint64_t p,
+  uint8_t *key,
   size_t keylen
 );
 

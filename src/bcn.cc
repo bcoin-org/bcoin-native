@@ -30,11 +30,11 @@ NAN_METHOD(hash) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("Second argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  unsigned char output[MAX_HASH_SIZE];
-  unsigned int outlen;
+  uint8_t output[MAX_HASH_SIZE];
+  uint32_t outlen;
 
   if (!bcn_hash(*name, data, len, output, &outlen))
     return Nan::ThrowError("Could not allocate context.");
@@ -61,14 +61,14 @@ NAN_METHOD(hmac) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("Third argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  const unsigned char *kdata = (unsigned char *)node::Buffer::Data(kbuf);
+  const uint8_t *kdata = (uint8_t *)node::Buffer::Data(kbuf);
   size_t klen = node::Buffer::Length(kbuf);
 
-  unsigned char output[MAX_HASH_SIZE];
-  unsigned int outlen;
+  uint8_t output[MAX_HASH_SIZE];
+  uint32_t outlen;
 
   if (!bcn_hmac(*name, data, len, kdata, klen, output, &outlen))
     return Nan::ThrowError("Could not allocate context.");
@@ -86,10 +86,10 @@ NAN_METHOD(sha256) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  unsigned char output[32];
+  uint8_t output[32];
 
   if (!bcn_sha256(data, len, output))
     return Nan::ThrowError("Could not allocate context.");
@@ -107,10 +107,10 @@ NAN_METHOD(hash160) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  unsigned char output[32];
+  uint8_t output[32];
 
   if (!bcn_hash160(data, len, output))
     return Nan::ThrowError("Could not allocate context.");
@@ -128,10 +128,10 @@ NAN_METHOD(hash256) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  unsigned char output[32];
+  uint8_t output[32];
 
   if (!bcn_hash256(data, len, output))
     return Nan::ThrowError("Could not allocate context.");
@@ -149,10 +149,10 @@ NAN_METHOD(to_base58) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  unsigned char *str;
+  uint8_t *str;
   size_t slen;
 
   if (!bcn_encode_b58(&str, &slen, data, len))
@@ -172,10 +172,10 @@ NAN_METHOD(from_base58) {
     return Nan::ThrowError("First argument must be a string.");
 
   Nan::Utf8String str_(info[0]);
-  const unsigned char *str = (const unsigned char *)*str_;
+  const uint8_t *str = (const uint8_t *)*str_;
   size_t len = str_.length();
 
-  unsigned char *data;
+  uint8_t *data;
   size_t dlen;
 
   if (!bcn_decode_b58(&data, &dlen, str, len))
@@ -219,19 +219,16 @@ NAN_METHOD(scrypt) {
 
   v8::Local<v8::Value> kval = v8::Local<v8::Value>::Cast(info[5]);
 
-  const char *pass = (const char *)node::Buffer::Data(pbuf);
-  const unsigned int passlen = (const unsigned int)node::Buffer::Length(pbuf);
-  const unsigned char *salt = (const unsigned char *)node::Buffer::Data(sbuf);
+  const uint8_t *pass = (const uint8_t *)node::Buffer::Data(pbuf);
+  const uint32_t passlen = (const uint32_t)node::Buffer::Length(pbuf);
+  const uint8_t *salt = (const uint8_t *)node::Buffer::Data(sbuf);
   size_t saltlen = (size_t)node::Buffer::Length(sbuf);
-  unsigned long long N =
-    (unsigned long long)v8::Local<v8::Integer>::Cast(nval)->Value();
-  unsigned long long r =
-    (unsigned long long)v8::Local<v8::Integer>::Cast(rval)->Value();
-  unsigned long long p =
-    (unsigned long long)v8::Local<v8::Integer>::Cast(pval)->Value();
+  uint64_t N = (uint64_t)v8::Local<v8::Integer>::Cast(nval)->Value();
+  uint64_t r = (uint64_t)v8::Local<v8::Integer>::Cast(rval)->Value();
+  uint64_t p = (uint64_t)v8::Local<v8::Integer>::Cast(pval)->Value();
   size_t keylen = (size_t)v8::Local<v8::Integer>::Cast(kval)->Value();
 
-  unsigned char *key = (unsigned char *)malloc(keylen);
+  uint8_t *key = (uint8_t *)malloc(keylen);
 
   if (key == NULL)
     return Nan::ThrowError("Could not allocate key.");
@@ -282,16 +279,13 @@ NAN_METHOD(scrypt_async) {
 
   v8::Local<v8::Function> callback = info[6].As<v8::Function>();
 
-  const char *pass = (const char *)node::Buffer::Data(pbuf);
-  const unsigned int passlen = (const unsigned int)node::Buffer::Length(pbuf);
-  const unsigned char *salt = (const unsigned char *)node::Buffer::Data(sbuf);
+  const uint8_t *pass = (const uint8_t *)node::Buffer::Data(pbuf);
+  const uint32_t passlen = (const uint32_t)node::Buffer::Length(pbuf);
+  const uint8_t *salt = (const uint8_t *)node::Buffer::Data(sbuf);
   size_t saltlen = (size_t)node::Buffer::Length(sbuf);
-  unsigned long long N =
-    (unsigned long long)v8::Local<v8::Integer>::Cast(nval)->Value();
-  unsigned long long r =
-    (unsigned long long)v8::Local<v8::Integer>::Cast(rval)->Value();
-  unsigned long long p =
-    (unsigned long long)v8::Local<v8::Integer>::Cast(pval)->Value();
+  uint64_t N = (uint64_t)v8::Local<v8::Integer>::Cast(nval)->Value();
+  uint64_t r = (uint64_t)v8::Local<v8::Integer>::Cast(rval)->Value();
+  uint64_t p = (uint64_t)v8::Local<v8::Integer>::Cast(pval)->Value();
   size_t keylen = (size_t)v8::Local<v8::Integer>::Cast(kval)->Value();
 
   ScryptWorker* worker = new ScryptWorker(
@@ -325,9 +319,9 @@ NAN_METHOD(murmur3) {
 
   v8::Local<v8::Value> sval = v8::Local<v8::Value>::Cast(info[1]);
 
-  const unsigned char *data = (const unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
-  unsigned int seed = (unsigned int)v8::Local<v8::Integer>::Cast(sval)->Value();
+  uint32_t seed = (uint32_t)v8::Local<v8::Integer>::Cast(sval)->Value();
 
   info.GetReturnValue().Set(
     Nan::New<v8::Number>((double)bcn_murmur3(data, len, seed)));
@@ -347,16 +341,16 @@ NAN_METHOD(siphash) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (const unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  const unsigned char *kdata = (const unsigned char *)node::Buffer::Data(kbuf);
+  const uint8_t *kdata = (const uint8_t *)node::Buffer::Data(kbuf);
   size_t klen = node::Buffer::Length(kbuf);
 
   if (klen < 16)
     return Nan::ThrowError("Bad key size for siphash.");
 
-  unsigned char output[8];
+  uint8_t output[8];
   bcn_siphash(data, len, kdata, output);
 
   info.GetReturnValue().Set(
@@ -377,16 +371,16 @@ NAN_METHOD(siphash256) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (const unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  const unsigned char *kdata = (const unsigned char *)node::Buffer::Data(kbuf);
+  const uint8_t *kdata = (const uint8_t *)node::Buffer::Data(kbuf);
   size_t klen = node::Buffer::Length(kbuf);
 
   if (klen < 16)
     return Nan::ThrowError("Bad key size for siphash.");
 
-  unsigned char output[8];
+  uint8_t output[8];
   bcn_siphash256(data, len, kdata, output);
 
   info.GetReturnValue().Set(
@@ -401,11 +395,11 @@ NAN_METHOD(build_merkle_tree) {
     return Nan::ThrowTypeError("First argument must be an Array.");
 
   v8::Local<v8::Array> tree = v8::Local<v8::Array>::Cast(info[0]);
-  unsigned int len = tree->Length();
-  unsigned int size = len;
-  unsigned int i, j, i2;
-  unsigned char *left, *right;
-  unsigned char hash[32];
+  uint32_t len = tree->Length();
+  uint32_t size = len;
+  uint32_t i, j, i2;
+  uint8_t *left, *right;
+  uint8_t hash[32];
   v8::Local<v8::Object> lbuf;
   v8::Local<v8::Object> rbuf;
   v8::Local<v8::Object> hbuf;
@@ -422,8 +416,8 @@ NAN_METHOD(build_merkle_tree) {
       if (!node::Buffer::HasInstance(rbuf) || node::Buffer::Length(rbuf) != 32)
         return Nan::ThrowTypeError("Right node is not a buffer.");
 
-      left = (unsigned char *)node::Buffer::Data(lbuf);
-      right = (unsigned char *)node::Buffer::Data(rbuf);
+      left = (uint8_t *)node::Buffer::Data(lbuf);
+      right = (uint8_t *)node::Buffer::Data(rbuf);
 
       if (i2 == i + 1 && i2 + 1 == size
           && memcmp(left, right, 32) == 0) {
@@ -468,11 +462,11 @@ NAN_METHOD(check_merkle_branch) {
   if (!node::Buffer::HasInstance(hbuf) || node::Buffer::Length(hbuf) != 32)
     return Nan::ThrowTypeError("Node is not a buffer.");
 
-  unsigned int index = (unsigned int)v8::Local<v8::Integer>::Cast(ib)->Value();
-  unsigned int len = branch->Length();
-  unsigned int i;
-  unsigned char hash[32];
-  unsigned char *otherside;
+  uint32_t index = (uint32_t)v8::Local<v8::Integer>::Cast(ib)->Value();
+  uint32_t len = branch->Length();
+  uint32_t i;
+  uint8_t hash[32];
+  uint8_t *otherside;
 
   if (len == 0) {
     info.GetReturnValue().Set(hbuf);
@@ -487,7 +481,7 @@ NAN_METHOD(check_merkle_branch) {
     if (!node::Buffer::HasInstance(hbuf) || node::Buffer::Length(hbuf) != 32)
       return Nan::ThrowTypeError("Node is not a buffer.");
 
-    otherside = (unsigned char *)node::Buffer::Data(hbuf);
+    otherside = (uint8_t *)node::Buffer::Data(hbuf);
 
     if (index & 1) {
       if (!bcn_hash256_lr(otherside, hash, hash))

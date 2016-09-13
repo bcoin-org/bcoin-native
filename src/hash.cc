@@ -1,12 +1,13 @@
+#include <stdint.h>
 #include "hash.h"
 
 bool
 bcn_hash(
   const char *name,
-  const unsigned char *data,
-  unsigned int len,
-  unsigned char *rdata,
-  unsigned int *rlen
+  const uint8_t *data,
+  uint32_t len,
+  uint8_t *rdata,
+  uint32_t *rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
 
@@ -31,12 +32,12 @@ bcn_hash(
 bool
 bcn_hmac(
   const char *name,
-  const unsigned char *data,
-  unsigned int len,
-  const unsigned char *kdata,
-  unsigned int klen,
-  unsigned char *rdata,
-  unsigned int *rlen
+  const uint8_t *data,
+  uint32_t len,
+  const uint8_t *kdata,
+  uint32_t klen,
+  uint8_t *rdata,
+  uint32_t *rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
 
@@ -50,7 +51,7 @@ bcn_hmac(
   if (HMAC_Init_ex(&hmctx, kdata, klen, md, NULL) <= 0)
     return false;
 
-  HMAC_Update(&hmctx, (const unsigned char *)data, len);
+  HMAC_Update(&hmctx, data, len);
 
   HMAC_Final(&hmctx, rdata, rlen);
   HMAC_CTX_cleanup(&hmctx);
@@ -62,19 +63,19 @@ bcn_hmac(
 bool
 bcn_hkdf_extract(
   const char *name,
-  const unsigned char *ikm,
-  unsigned int ilen,
-  const unsigned char *salt,
-  unsigned int slen,
-  unsigned char *rdata,
-  unsigned int *rlen
+  const uint8_t *ikm,
+  uint32_t ilen,
+  const uint8_t *salt,
+  uint32_t slen,
+  uint8_t *rdata,
+  uint32_t *rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
 
   if (md == NULL)
     return false;
 
-  unsigned char *ret;
+  uint8_t *ret;
 
   ret = HKDF_Extract(
     md, salt, (size_t)slen, ikm, (size_t)ilen,
@@ -88,20 +89,20 @@ bcn_hkdf_extract(
 
 bool
 bcn_hkdf_expand(
-  const char *name,
-  const unsigned char *prk,
-  unsigned int plen,
-  const unsigned char *info,
-  unsigned int ilen,
-  unsigned char *rdata,
-  unsigned int rlen
+  const uint8_t *name,
+  const uint8_t *prk,
+  uint32_t plen,
+  const uint8_t *info,
+  uint32_t ilen,
+  uint8_t *rdata,
+  uint32_t rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
 
   if (md == NULL)
     return false;
 
-  unsigned char *ret;
+  uint8_t *ret;
 
   if (md == NULL)
     return false;
@@ -118,7 +119,7 @@ bcn_hkdf_expand(
 #endif
 
 bool
-bcn_sha256(const unsigned char *data, unsigned int len, unsigned char *out) {
+bcn_sha256(const uint8_t *data, uint32_t len, uint8_t *out) {
   SHA256_CTX ctx;
 
   SHA256_Init(&ctx);
@@ -129,7 +130,7 @@ bcn_sha256(const unsigned char *data, unsigned int len, unsigned char *out) {
 }
 
 bool
-bcn_rmd160(const unsigned char *data, unsigned int len, unsigned char *out) {
+bcn_rmd160(const uint8_t *data, uint32_t len, uint8_t *out) {
   RIPEMD160_CTX ctx;
 
   RIPEMD160_Init(&ctx);
@@ -140,7 +141,7 @@ bcn_rmd160(const unsigned char *data, unsigned int len, unsigned char *out) {
 }
 
 bool
-bcn_hash160(const unsigned char *data, unsigned int len, unsigned char *out) {
+bcn_hash160(const uint8_t *data, uint32_t len, uint8_t *out) {
   SHA256_CTX sctx;
 
   SHA256_Init(&sctx);
@@ -157,7 +158,7 @@ bcn_hash160(const unsigned char *data, unsigned int len, unsigned char *out) {
 }
 
 bool
-bcn_hash256(const unsigned char *data, unsigned int len, unsigned char *out) {
+bcn_hash256(const uint8_t *data, uint32_t len, uint8_t *out) {
   SHA256_CTX ctx;
 
   SHA256_Init(&ctx);
@@ -172,7 +173,7 @@ bcn_hash256(const unsigned char *data, unsigned int len, unsigned char *out) {
 }
 
 bool
-bcn_hash256_lr(const unsigned char *left, const unsigned char *right, unsigned char *out) {
+bcn_hash256_lr(const uint8_t *left, const uint8_t *right, uint8_t *out) {
   SHA256_CTX ctx;
 
   SHA256_Init(&ctx);
@@ -190,13 +191,13 @@ bcn_hash256_lr(const unsigned char *left, const unsigned char *right, unsigned c
 bool
 bcn_pbkdf2(
   const char *name,
-  const unsigned char *data,
-  unsigned int len,
-  const unsigned char *salt,
-  unsigned int slen,
-  unsigned int iter,
-  unsigned char *rdata,
-  unsigned int rlen
+  const uint8_t *data,
+  uint32_t len,
+  const uint8_t *salt,
+  uint32_t slen,
+  uint32_t iter,
+  uint8_t *rdata,
+  uint32_t rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
 

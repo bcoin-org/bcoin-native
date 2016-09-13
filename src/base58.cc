@@ -4,27 +4,27 @@
 #include <stdlib.h>
 #include <assert.h>
 
-static const char b58_tbl[] =
+static const uint8_t b58_tbl[] =
   "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 bool
 bcn_decode_b58(
-  unsigned char **data,
+  uint8_t **data,
   size_t *datalen,
-  const unsigned char *str,
+  const uint8_t *str,
   size_t strlen
 ) {
-  int zeroes = 0;
-  int i = 0;
-  unsigned char *b256;
-  int ch, carry, j, slen, dlen, b256len;
+  int32_t zeroes = 0;
+  int32_t i = 0;
+  uint8_t *b256;
+  int32_t ch, carry, j, slen, dlen, b256len;
 
   *data = NULL;
   *datalen = 0;
 
   assert(str != NULL);
 
-  slen = (int)strlen;
+  slen = (int32_t)strlen;
 
   if (slen == 0)
     return true;
@@ -36,7 +36,7 @@ bcn_decode_b58(
   }
 
   b256len = slen * 733 / 1000 + 1;
-  b256 = (unsigned char *)malloc(b256len);
+  b256 = (uint8_t *)malloc(b256len);
 
   if (b256 == NULL)
     return false;
@@ -149,7 +149,7 @@ bcn_decode_b58(
     i++;
 
   dlen = zeroes + (b256len - i);
-  *data = (unsigned char *)malloc(dlen);
+  *data = (uint8_t *)malloc(dlen);
 
   if (*data == NULL) {
     free(b256);
@@ -173,17 +173,17 @@ bcn_decode_b58(
 
 bool
 bcn_encode_b58(
-  unsigned char **str,
+  uint8_t **str,
   size_t *strlen,
-  const unsigned char *data,
+  const uint8_t *data,
   size_t datalen
 ) {
-  int zeroes = 0;
-  int length = 0;
-  unsigned char *b58;
-  int b58len;
-  int i, carry, j, k;
-  int dlen = (int)datalen;
+  int32_t zeroes = 0;
+  int32_t length = 0;
+  uint8_t *b58;
+  int32_t b58len;
+  int32_t i, carry, j, k;
+  int32_t dlen = (int32_t)datalen;
 
   *str = NULL;
   *strlen = 0;
@@ -200,7 +200,7 @@ bcn_encode_b58(
   }
 
   b58len = dlen * 138 / 100 + 1 + 1;
-  b58 = (unsigned char *)malloc(b58len);
+  b58 = (uint8_t *)malloc(b58len);
 
   if (b58 == NULL)
     return false;
@@ -225,7 +225,7 @@ bcn_encode_b58(
   while (i < b58len && b58[i] == 0)
     i++;
 
-  *str = (unsigned char *)malloc(zeroes + (b58len - i));
+  *str = (uint8_t *)malloc(zeroes + (b58len - i));
 
   if (*str == NULL) {
     free(b58);

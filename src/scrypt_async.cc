@@ -4,13 +4,13 @@
 ScryptWorker::ScryptWorker (
   v8::Local<v8::Object> &passHandle,
   v8::Local<v8::Object> &saltHandle,
-  const char *pass,
-  const unsigned int passlen,
-  const unsigned char *salt,
+  const uint8_t *pass,
+  const uint32_t passlen,
+  const uint8_t *salt,
   size_t saltlen,
-  unsigned long long N,
-  unsigned long long r,
-  unsigned long long p,
+  uint64_t N,
+  uint64_t r,
+  uint64_t p,
   size_t keylen,
   Nan::Callback *callback
 ) : Nan::AsyncWorker(callback)
@@ -32,7 +32,7 @@ ScryptWorker::ScryptWorker (
 ScryptWorker::~ScryptWorker() {}
 
 void ScryptWorker::Execute() {
-  key = (unsigned char *)malloc(keylen);
+  key = (uint8_t *)malloc(keylen);
 
   if (key == NULL) {
     SetErrorMessage("Scrypt failed.");
@@ -50,7 +50,7 @@ void ScryptWorker::HandleOKCallback() {
   Nan::HandleScope scope;
 
   v8::Local<v8::Value> keyBuffer =
-    Nan::NewBuffer((char*)key, keylen).ToLocalChecked();
+    Nan::NewBuffer((char *)key, keylen).ToLocalChecked();
 
   v8::Local<v8::Value> argv[] = { Nan::Null(), keyBuffer };
 

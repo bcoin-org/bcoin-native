@@ -5,17 +5,17 @@
 
 bool
 bcn_decode_b58(
-  unsigned char **data,
+  uint8_t **data,
   size_t *datalen,
-  const unsigned char *str,
+  const uint8_t *str,
   size_t strlen
 );
 
 bool
 bcn_encode_b58(
-  unsigned char **str,
+  uint8_t **str,
   size_t *strlen,
-  const unsigned char *data,
+  const uint8_t *data,
   size_t datalen
 );
 

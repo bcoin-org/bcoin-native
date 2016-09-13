@@ -6,19 +6,19 @@ ROTL32(uint32_t x, int8_t r) {
   return (x << r) | (x >> (32 - r));
 }
 
-unsigned int
-bcn_murmur3(const unsigned char *data, size_t len, unsigned int seed) {
+uint32_t
+bcn_murmur3(const uint8_t *data, size_t len, uint32_t seed) {
   uint32_t h1 = seed;
 
   if (len > 0) {
     const uint32_t c1 = 0xcc9e2d51;
     const uint32_t c2 = 0x1b873593;
 
-    const int nblocks = len / 4;
+    const int32_t nblocks = len / 4;
 
     const uint8_t *blocks = &data[0] + nblocks * 4;
 
-    for (int i = -nblocks; i; i++) {
+    for (int32_t i = -nblocks; i; i++) {
       uint32_t k1 = READU32(blocks + i * 4);
 
       k1 *= c1;

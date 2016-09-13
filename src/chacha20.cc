@@ -64,7 +64,7 @@ void ChaCha20::InitKey(v8::Local<v8::Object> &key) {
   if (!node::Buffer::HasInstance(key))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(key);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(key);
   size_t len = node::Buffer::Length(key);
 
   if (len != 32)
@@ -79,18 +79,18 @@ void ChaCha20::InitIV(v8::Local<v8::Object> &iv, v8::Local<v8::Value> &num) {
   if (!node::Buffer::HasInstance(iv))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  unsigned int ctr = 0;
+  uint32_t ctr = 0;
 
   if (num->IsNumber())
     ctr = v8::Local<v8::Integer>::Cast(num)->Value();
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(iv);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(iv);
   size_t len = node::Buffer::Length(iv);
 
   if (len != 8 && len != 12)
     return Nan::ThrowError("Invalid IV size.");
 
-  chacha20_ivsetup(&ctx, (unsigned char *)data, (unsigned char)len);
+  chacha20_ivsetup(&ctx, (uint8_t *)data, (uint8_t)len);
   chacha20_counter_set(&ctx, ctr);
 }
 
@@ -134,10 +134,10 @@ NAN_METHOD(ChaCha20::Encrypt) {
   if (!node::Buffer::HasInstance(buf))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
 
-  const unsigned char *data = (unsigned char *)node::Buffer::Data(buf);
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
-  chacha20_encrypt(&chacha->ctx, (unsigned char *)data, (unsigned char *)data, len);
+  chacha20_encrypt(&chacha->ctx, (uint8_t *)data, (uint8_t *)data, len);
 
   info.GetReturnValue().Set(buf);
 }
@@ -153,7 +153,7 @@ NAN_METHOD(ChaCha20::SetCounter) {
   if (!num->IsNumber())
     return Nan::ThrowError("First argument must be a number.");
 
-  unsigned long long ctr = v8::Local<v8::Integer>::Cast(num)->Value();
+  uint64_t ctr = v8::Local<v8::Integer>::Cast(num)->Value();
   chacha20_counter_set(&chacha->ctx, ctr);
 }
 

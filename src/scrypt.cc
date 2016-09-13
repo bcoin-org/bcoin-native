@@ -5,24 +5,19 @@ extern "C" {
 
 bool
 bcn_scrypt(
-  const char *pass,
-  const unsigned int passlen,
-  const unsigned char *salt,
+  const uint8_t *pass,
+  const uint32_t passlen,
+  const uint8_t *salt,
   size_t saltlen,
-  unsigned long long N,
-  unsigned long long r,
-  unsigned long long p,
-  unsigned char *key,
+  uint64_t N,
+  uint64_t r,
+  uint64_t p,
+  uint8_t *key,
   size_t keylen
 ) {
-  int result = crypto_scrypt(
-    (uint8_t *)pass, passlen,
-    (uint8_t *)salt, saltlen,
-    (uint64_t)N,
-    (uint64_t)r,
-    (uint64_t)p,
-    (uint8_t *)key,
-    keylen);
+  int32_t result = crypto_scrypt(
+    pass, passlen, salt, saltlen,
+    N, r, p, key, keylen);
 
   return result == 0;
 }
@@ -31,15 +26,15 @@ bcn_scrypt(
 #include "openssl/evp.h"
 bool
 bcn_scrypt(
-  const char *pass,
-  const unsigned int passlen,
-  const unsigned char *salt,
+  const uint8_t *pass,
+  const uint32_t passlen,
+  const uint8_t *salt,
   size_t saltlen,
-  unsigned long long N,
-  unsigned long long r,
-  unsigned long long p,
+  uint64_t N,
+  uint64_t r,
+  uint64_t p,
   size_t keylen,
-  unsigned char *key
+  uint8_t *key
 ) {
   uint64_t maxmem = 0xffffffffffffffff;
   if (EVP_PBE_scrypt(pass, passlen, salt, saltlen, N, r, p, maxmem, key, keylen) <= 0)
