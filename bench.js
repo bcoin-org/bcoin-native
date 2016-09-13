@@ -220,6 +220,28 @@ for (var i = 0; i < 100000; i++) {
 end(i);
 
 try {
+  var crypto = require('bcoin/lib/crypto/crypto');
+} catch (e) {
+  return;
+}
+
+var leaves = [];
+for (var i = 0; i < 300; i++)
+  leaves.push(crypto.randomBytes(32));
+
+var end = bench('crypto.buildMerkleTree');
+for (var i = 0; i < 1000; i++) {
+  crypto.buildMerkleTree(leaves);
+}
+end(i);
+
+var end = bench('native.buildMerkleTree');
+for (var i = 0; i < 1000; i++) {
+  native.buildMerkleTree(leaves.slice());
+}
+end(i);
+
+try {
   var ccp = require('bcoin/lib/crypto/chachapoly');
 } catch (e) {
   return;
