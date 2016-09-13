@@ -58,7 +58,8 @@ NAN_METHOD(ChaCha20::Init) {
   }
 }
 
-void ChaCha20::InitKey(v8::Local<v8::Object> &key) {
+void
+ChaCha20::InitKey(v8::Local<v8::Object> &key) {
   Nan::HandleScope scope;
 
   if (!node::Buffer::HasInstance(key))
@@ -73,22 +74,23 @@ void ChaCha20::InitKey(v8::Local<v8::Object> &key) {
   chacha20_keysetup(&ctx, data, 32);
 }
 
-void ChaCha20::InitIV(v8::Local<v8::Object> &iv, v8::Local<v8::Value> &num) {
+void
+ChaCha20::InitIV(v8::Local<v8::Object> &iv, v8::Local<v8::Value> &num) {
   Nan::HandleScope scope;
 
   if (!node::Buffer::HasInstance(iv))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
-
-  uint32_t ctr = 0;
-
-  if (num->IsNumber())
-    ctr = v8::Local<v8::Integer>::Cast(num)->Value();
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(iv);
   size_t len = node::Buffer::Length(iv);
 
   if (len != 8 && len != 12)
     return Nan::ThrowError("Invalid IV size.");
+
+  uint64_t ctr = 0;
+
+  if (num->IsNumber())
+    ctr = (uint64_t)v8::Local<v8::Integer>::Cast(num)->Value();
 
   chacha20_ivsetup(&ctx, (uint8_t *)data, (uint8_t)len);
   chacha20_counter_set(&ctx, ctr);
