@@ -199,7 +199,7 @@ bcn_encode_b58(
     zeroes++;
   }
 
-  b58len = dlen * 138 / 100 + 1 + 1;
+  b58len = dlen * 138 / 100 + 1;
   b58 = (uint8_t *)malloc(b58len);
 
   if (b58 == NULL)
@@ -225,7 +225,7 @@ bcn_encode_b58(
   while (i < b58len && b58[i] == 0)
     i++;
 
-  *str = (uint8_t *)malloc(zeroes + (b58len - i));
+  *str = (uint8_t *)malloc(zeroes + (b58len - i) + 1);
 
   if (*str == NULL) {
     free(b58);
