@@ -7,6 +7,18 @@
 static const uint8_t b58_tbl[] =
   "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
+// Taken from https://github.com/bitcoin/libbase58/blob/master/base58.c
+static const int8_t ub58_tbl[] = {
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  -1,  0,  1,  2,  3,  4,  5,  6,  7,  8, -1, -1, -1, -1, -1, -1,
+  -1,  9, 10, 11, 12, 13, 14, 15, 16, -1, 17, 18, 19, 20, 21, -1,
+  22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, -1, -1, -1, -1, -1,
+  -1, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, -1, 44, 45, 46,
+  47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, -1, -1, -1, -1, -1
+};
+
 bool
 bcn_decode_b58(
   uint8_t **data,
@@ -44,92 +56,9 @@ bcn_decode_b58(
   memset(b256, 0, b256len);
 
   for (; i < slen; i++) {
-    ch = str[i];
+    ch = (int32_t)ub58_tbl[str[i]];
 
-    // Big switch statement taken
-    // from breadwallet code.
-    switch (ch) {
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        ch -= '1';
-        break;
-
-      case 'A':
-      case 'B':
-      case 'C':
-      case 'D':
-      case 'E':
-      case 'F':
-      case 'G':
-      case 'H':
-        ch += 9 - 'A';
-        break;
-
-      case 'J':
-      case 'K':
-      case 'L':
-      case 'M':
-      case 'N':
-        ch += 17 - 'J';
-        break;
-
-      case 'P':
-      case 'Q':
-      case 'R':
-      case 'S':
-      case 'T':
-      case 'U':
-      case 'V':
-      case 'W':
-      case 'X':
-      case 'Y':
-      case 'Z':
-        ch += 22 - 'P';
-        break;
-
-      case 'a':
-      case 'b':
-      case 'c':
-      case 'd':
-      case 'e':
-      case 'f':
-      case 'g':
-      case 'h':
-      case 'i':
-      case 'j':
-      case 'k':
-        ch += 33 - 'a';
-        break;
-
-      case 'm':
-      case 'n':
-      case 'o':
-      case 'p':
-      case 'q':
-      case 'r':
-      case 's':
-      case 't':
-      case 'u':
-      case 'v':
-      case 'w':
-      case 'x':
-      case 'y':
-      case 'z':
-        ch += 44 - 'm';
-        break;
-
-      default:
-        ch = UINT32_MAX;
-    }
-
-    if (ch >= 58) {
+    if (ch == -1) {
       free(b256);
       return false;
     }
