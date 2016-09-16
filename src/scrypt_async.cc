@@ -31,7 +31,8 @@ ScryptWorker::ScryptWorker (
 
 ScryptWorker::~ScryptWorker() {}
 
-void ScryptWorker::Execute() {
+void
+ScryptWorker::Execute() {
   key = (uint8_t *)malloc(keylen);
 
   if (key == NULL) {
@@ -46,7 +47,8 @@ void ScryptWorker::Execute() {
   }
 }
 
-void ScryptWorker::HandleOKCallback() {
+void
+ScryptWorker::HandleOKCallback() {
   Nan::HandleScope scope;
 
   v8::Local<v8::Value> keyBuffer =

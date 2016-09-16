@@ -6,7 +6,8 @@ ChaCha20::ChaCha20() {}
 
 ChaCha20::~ChaCha20() {}
 
-void ChaCha20::Init(v8::Local<v8::Object> &target) {
+void
+ChaCha20::Init(v8::Local<v8::Object> &target) {
   Nan::HandleScope scope;
 
   v8::Local<v8::FunctionTemplate> tpl =
