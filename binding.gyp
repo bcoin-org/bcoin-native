@@ -25,6 +25,9 @@
       "-Wextra",
       "-O3"
     ],
+    "cflags_c": [
+      "-std=c99"
+    ],
     "defines": [
       "POLY1305_64BIT"
     ],
