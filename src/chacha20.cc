@@ -2,7 +2,10 @@
 
 static Nan::Persistent<v8::FunctionTemplate> chacha20_constructor;
 
-ChaCha20::ChaCha20() {}
+ChaCha20::ChaCha20() {
+  memset(&ctx, 0, sizeof(chacha20_ctx));
+  ctx.iv_size = 64;
+}
 
 ChaCha20::~ChaCha20() {}
 
@@ -32,6 +35,22 @@ ChaCha20::Init(v8::Local<v8::Object> &target) {
 }
 
 NAN_METHOD(ChaCha20::New) {
+  if (!info.IsConstructCall()) {
+    v8::Local<v8::FunctionTemplate> ctor =
+        Nan::New<v8::FunctionTemplate>(chacha20_constructor);
+    Nan::MaybeLocal<v8::Object> maybeInstance;
+    v8::Local<v8::Object> instance;
+
+    maybeInstance = Nan::NewInstance(ctor->GetFunction(), 0, NULL);
+
+    if (maybeInstance.IsEmpty())
+      Nan::ThrowError("Could not create ChaCha20 instance.");
+
+    instance = maybeInstance.ToLocalChecked();
+
+    info.GetReturnValue().Set(instance);
+    return;
+  }
   ChaCha20* chacha = new ChaCha20();
   chacha->Wrap(info.This());
   info.GetReturnValue().Set(info.This());
@@ -101,7 +120,7 @@ NAN_METHOD(ChaCha20::InitIV) {
   ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
-    return Nan::ThrowError("chacha20.init() requires arguments.");
+    return Nan::ThrowError("chacha20.initIV() requires arguments.");
 
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
@@ -116,7 +135,7 @@ NAN_METHOD(ChaCha20::InitKey) {
   ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
-    return Nan::ThrowError("chacha20.init() requires arguments.");
+    return Nan::ThrowError("chacha20.initKey() requires arguments.");
 
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 

@@ -59,7 +59,7 @@ bcn_hmac(
   return true;
 }
 
-#if 0
+#if BCN_USE_HKDF
 bool
 bcn_hkdf_extract(
   const char *name,
@@ -71,11 +71,10 @@ bcn_hkdf_extract(
   uint32_t *rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
+  uint8_t *ret;
 
   if (md == NULL)
     return false;
-
-  uint8_t *ret;
 
   ret = HKDF_Extract(
     md, salt, (size_t)slen, ikm, (size_t)ilen,
@@ -98,10 +97,6 @@ bcn_hkdf_expand(
   uint32_t rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
-
-  if (md == NULL)
-    return false;
-
   uint8_t *ret;
 
   if (md == NULL)
@@ -200,11 +195,16 @@ bcn_pbkdf2(
   uint32_t rlen
 ) {
   const EVP_MD* md = EVP_get_digestbyname(name);
+  uint32_t ret;
 
   if (md == NULL)
     return false;
 
-  if (PKCS5_PBKDF2_HMAC((const char *)data, len, salt, slen, iter, md, rlen, rdata) <= 0)
+  ret = PKCS5_PBKDF2_HMAC(
+    (const char *)data, len, salt,
+    slen, iter, md, rlen, rdata);
+
+  if (ret <= 0)
     return false;
 
   return true;

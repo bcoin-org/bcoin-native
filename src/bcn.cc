@@ -187,7 +187,7 @@ NAN_METHOD(from_base58) {
 
 NAN_METHOD(scrypt) {
   if (info.Length() < 1)
-    return Nan::ThrowError("to_base58() requires arguments.");
+    return Nan::ThrowError("scrypt() requires arguments.");
 
   v8::Local<v8::Object> pbuf = info[0].As<v8::Object>();
 
@@ -242,7 +242,7 @@ NAN_METHOD(scrypt) {
 
 NAN_METHOD(scrypt_async) {
   if (info.Length() < 1)
-    return Nan::ThrowError("to_base58() requires arguments.");
+    return Nan::ThrowError("scrypt_async() requires arguments.");
 
   v8::Local<v8::Object> pbuf = info[0].As<v8::Object>();
 

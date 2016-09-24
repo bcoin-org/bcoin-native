@@ -6,7 +6,7 @@
 #include "openssl/ripemd.h"
 #include "openssl/hmac.h"
 
-#if 0
+#if BCN_USE_HKDF
 #include "openssl/kdf.h"
 #endif
 
@@ -32,7 +32,7 @@ bcn_hmac(
   uint32_t *rlen
 );
 
-#if 0
+#if BCN_USE_HKDF
 bool
 bcn_hkdf_extract(
   const char *name,

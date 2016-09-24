@@ -275,7 +275,7 @@ try {
 });
 
 try {
-  var murmur3 = require('bcoin/lib/primitives/bloom').murmur3;
+  var murmur3 = require('bcoin/lib/utils/murmur3');
 } catch (e) {
   return;
 }

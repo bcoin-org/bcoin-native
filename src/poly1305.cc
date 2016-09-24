@@ -2,7 +2,9 @@
 
 static Nan::Persistent<v8::FunctionTemplate> poly1305_constructor;
 
-Poly1305::Poly1305() {}
+Poly1305::Poly1305() {
+  memset(&ctx, 0, sizeof(poly1305_context));
+}
 
 Poly1305::~Poly1305() {}
 
@@ -30,6 +32,22 @@ void Poly1305::Init(v8::Local<v8::Object> &target) {
 }
 
 NAN_METHOD(Poly1305::New) {
+  if (!info.IsConstructCall()) {
+    v8::Local<v8::FunctionTemplate> ctor =
+        Nan::New<v8::FunctionTemplate>(poly1305_constructor);
+    Nan::MaybeLocal<v8::Object> maybeInstance;
+    v8::Local<v8::Object> instance;
+
+    maybeInstance = Nan::NewInstance(ctor->GetFunction(), 0, NULL);
+
+    if (maybeInstance.IsEmpty())
+      Nan::ThrowError("Could not create Poly1305 instance.");
+
+    instance = maybeInstance.ToLocalChecked();
+
+    info.GetReturnValue().Set(instance);
+    return;
+  }
   Poly1305* poly = new Poly1305();
   poly->Wrap(info.This());
   info.GetReturnValue().Set(info.This());
