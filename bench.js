@@ -307,3 +307,22 @@ try {
     obj.siphash256(u256, k);
   end(i);
 });
+
+[['js', ccp], ['c', native]].forEach(function(item) {
+  var name = item[0];
+  var obj = item[1];
+
+  var chacha = new obj.ChaCha20();
+  var iv = new Buffer('0102030405060708', 'hex');
+  var key = new Buffer(32);
+  for (var i = 0; i < 32; i++)
+    key[i] = i;
+  chacha.init(key, iv, 0);
+  var data = new Buffer(32);
+  for (var i = 0; i < 32; i++)
+    data[i] = i;
+  var end = bench(name + ' chacha20');
+  for (var i = 0; i < 1000000; i++)
+    chacha.encrypt(data);
+  end(i * 32 / 1024);
+});
