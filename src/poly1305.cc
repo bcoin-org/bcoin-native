@@ -8,7 +8,8 @@ Poly1305::Poly1305() {
 
 Poly1305::~Poly1305() {}
 
-void Poly1305::Init(v8::Local<v8::Object> &target) {
+void
+Poly1305::Init(v8::Local<v8::Object> &target) {
   Nan::HandleScope scope;
 
   v8::Local<v8::FunctionTemplate> tpl =
@@ -41,7 +42,7 @@ NAN_METHOD(Poly1305::New) {
     maybeInstance = Nan::NewInstance(ctor->GetFunction(), 0, NULL);
 
     if (maybeInstance.IsEmpty())
-      Nan::ThrowError("Could not create Poly1305 instance.");
+      return Nan::ThrowError("Could not create Poly1305 instance.");
 
     instance = maybeInstance.ToLocalChecked();
 

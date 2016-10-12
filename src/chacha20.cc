@@ -4,7 +4,7 @@ static Nan::Persistent<v8::FunctionTemplate> chacha20_constructor;
 
 ChaCha20::ChaCha20() {
   memset(&ctx, 0, sizeof(chacha20_ctx));
-  ctx.iv_size = 64;
+  ctx.iv_size = 8;
 }
 
 ChaCha20::~ChaCha20() {}
@@ -44,7 +44,7 @@ NAN_METHOD(ChaCha20::New) {
     maybeInstance = Nan::NewInstance(ctor->GetFunction(), 0, NULL);
 
     if (maybeInstance.IsEmpty())
-      Nan::ThrowError("Could not create ChaCha20 instance.");
+      return Nan::ThrowError("Could not create ChaCha20 instance.");
 
     instance = maybeInstance.ToLocalChecked();
 
@@ -83,7 +83,7 @@ ChaCha20::InitKey(v8::Local<v8::Object> &key) {
   Nan::HandleScope scope;
 
   if (!node::Buffer::HasInstance(key))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("`key` must be a Buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(key);
   size_t len = node::Buffer::Length(key);
@@ -99,7 +99,7 @@ ChaCha20::InitIV(v8::Local<v8::Object> &iv, v8::Local<v8::Value> &num) {
   Nan::HandleScope scope;
 
   if (!node::Buffer::HasInstance(iv))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("`iv` must be a Buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(iv);
   size_t len = node::Buffer::Length(iv);

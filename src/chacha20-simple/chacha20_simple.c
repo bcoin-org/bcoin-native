@@ -44,7 +44,7 @@ void chacha20_keysetup(chacha20_ctx *ctx, const uint8_t *key, size_t length)
   ctx->schedule[12] = 0; //Counter
 
   ctx->available = 0;
-  ctx->iv_size = 64;
+  ctx->iv_size = 8;
 }
 
 void chacha20_ivsetup(chacha20_ctx *ctx, uint8_t *nonce, uint8_t iv_size)
