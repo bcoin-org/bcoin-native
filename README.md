@@ -22,6 +22,7 @@ Used in [bcoin][bcoin].
   - `siphash256(data, key)`
   - `buildMerkleTree(leaves)`
   - `checkMerkleBranch(hash, branch, index)`
+  - `cleanse(data)`
 
 ## Objects
   - `Poly1305()`

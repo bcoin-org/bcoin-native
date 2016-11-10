@@ -499,6 +499,21 @@ NAN_METHOD(check_merkle_branch) {
   info.GetReturnValue().Set(hbuf);
 }
 
+NAN_METHOD(cleanse) {
+  if (info.Length() < 1)
+    return Nan::ThrowError("cleanse() requires arguments.");
+
+  v8::Local<v8::Object> buf = info[0].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(buf))
+    return Nan::ThrowTypeError("First argument must be a Buffer.");
+
+  const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
+  size_t len = node::Buffer::Length(buf);
+
+  OPENSSL_cleanse((void *)data, len);
+}
+
 NAN_MODULE_INIT(init) {
   Nan::Export(target, "hash", hash);
   Nan::Export(target, "hmac", hmac);
@@ -514,6 +529,7 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "siphash256", siphash256);
   Nan::Export(target, "buildMerkleTree", build_merkle_tree);
   Nan::Export(target, "checkMerkleBranch", check_merkle_branch);
+  Nan::Export(target, "cleanse", cleanse);
 
   ChaCha20::Init(target);
   Poly1305::Init(target);

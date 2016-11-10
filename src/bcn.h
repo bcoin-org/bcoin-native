@@ -18,5 +18,6 @@ NAN_METHOD(siphash);
 NAN_METHOD(siphash256);
 NAN_METHOD(build_merkle_tree);
 NAN_METHOD(check_merkle_branch);
+NAN_METHOD(cleanse);
 
 #endif
