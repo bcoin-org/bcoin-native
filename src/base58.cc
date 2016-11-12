@@ -27,9 +27,10 @@ bcn_decode_b58(
   size_t strlen
 ) {
   int32_t zeroes = 0;
+  int32_t length = 0;
   int32_t i = 0;
   uint8_t *b256;
-  int32_t ch, carry, j, slen, dlen, b256len;
+  int32_t ch, carry, j, k, slen, dlen, b256len;
 
   *data = NULL;
   *datalen = 0;
@@ -64,13 +65,18 @@ bcn_decode_b58(
     }
 
     carry = ch;
-    for (j = b256len - 1; j >= 0; j--) {
-      carry += 58 * b256[j];
-      b256[j] = carry % 256;
+    j = 0;
+
+    for (k = b256len - 1; k >= 0; k--, j++) {
+      if (carry == 0 && j >= length)
+        break;
+      carry += 58 * b256[k];
+      b256[k] = carry % 256;
       carry = carry / 256;
     }
 
     assert(carry == 0);
+    length = j;
   }
 
   i = 0;
@@ -139,6 +145,7 @@ bcn_encode_b58(
   for (; i < dlen; i++) {
     carry = data[i];
     j = 0;
+
     for (k = b58len - 1; k >= 0; k--, j++) {
       if (carry == 0 && j >= length)
         break;
@@ -146,6 +153,7 @@ bcn_encode_b58(
       b58[k] = carry % 58;
       carry = carry / 58;
     }
+
     assert(carry == 0);
     length = j;
   }
