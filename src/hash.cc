@@ -1,5 +1,16 @@
 #include <stdint.h>
+
 #include "hash.h"
+#include "common.h"
+#include "openssl/err.h"
+#include "openssl/evp.h"
+#include "openssl/sha.h"
+#include "openssl/ripemd.h"
+#include "openssl/hmac.h"
+
+#if BCN_USE_HKDF
+#include "openssl/kdf.h"
+#endif
 
 bool
 bcn_hash(
@@ -112,6 +123,17 @@ bcn_hkdf_expand(
   return true;
 }
 #endif
+
+bool
+bcn_sha1(const uint8_t *data, uint32_t len, uint8_t *out) {
+  SHA_CTX ctx;
+
+  SHA1_Init(&ctx);
+  SHA1_Update(&ctx, data, len);
+  SHA1_Final(out, &ctx);
+
+  return true;
+}
 
 bool
 bcn_sha256(const uint8_t *data, uint32_t len, uint8_t *out) {

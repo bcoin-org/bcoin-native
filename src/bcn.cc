@@ -8,6 +8,7 @@
 
 #include "common.h"
 #include "hash.h"
+#include "cipher.h"
 #include "base58.h"
 #include "chacha20.h"
 #include "poly1305.h"
@@ -75,6 +76,48 @@ NAN_METHOD(hmac) {
 
   info.GetReturnValue().Set(
     Nan::CopyBuffer((char *)&output[0], outlen).ToLocalChecked());
+}
+
+NAN_METHOD(ripemd160) {
+  if (info.Length() < 1)
+    return Nan::ThrowError("ripemd160() requires arguments.");
+
+  v8::Local<v8::Object> buf = info[0].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(buf))
+    return Nan::ThrowTypeError("First argument must be a Buffer.");
+
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
+  size_t len = node::Buffer::Length(buf);
+
+  uint8_t output[20];
+
+  if (!bcn_rmd160(data, len, output))
+    return Nan::ThrowError("Could not allocate context.");
+
+  info.GetReturnValue().Set(
+    Nan::CopyBuffer((char *)&output[0], 20).ToLocalChecked());
+}
+
+NAN_METHOD(sha1) {
+  if (info.Length() < 1)
+    return Nan::ThrowError("sha1() requires arguments.");
+
+  v8::Local<v8::Object> buf = info[0].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(buf))
+    return Nan::ThrowTypeError("First argument must be a Buffer.");
+
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
+  size_t len = node::Buffer::Length(buf);
+
+  uint8_t output[20];
+
+  if (!bcn_sha1(data, len, output))
+    return Nan::ThrowError("Could not allocate context.");
+
+  info.GetReturnValue().Set(
+    Nan::CopyBuffer((char *)&output[0], 20).ToLocalChecked());
 }
 
 NAN_METHOD(sha256) {
@@ -514,22 +557,116 @@ NAN_METHOD(cleanse) {
   OPENSSL_cleanse((void *)data, len);
 }
 
+NAN_METHOD(encipher) {
+  if (info.Length() < 3)
+    return Nan::ThrowError("encipher() requires arguments.");
+
+  if (!node::Buffer::HasInstance(info[0]))
+    return Nan::ThrowTypeError("First argument must be a Buffer.");
+
+  if (!node::Buffer::HasInstance(info[1]))
+    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+
+  if (!node::Buffer::HasInstance(info[2]))
+    return Nan::ThrowTypeError("Third argument must be a Buffer.");
+
+  v8::Local<v8::Object> bdata = info[0].As<v8::Object>();
+  v8::Local<v8::Object> bkey = info[1].As<v8::Object>();
+  v8::Local<v8::Object> biv = info[2].As<v8::Object>();
+
+  uint8_t *data = (uint8_t *)node::Buffer::Data(bdata);
+  size_t dlen = node::Buffer::Length(bdata);
+
+  const uint8_t *key = (uint8_t *)node::Buffer::Data(bkey);
+  size_t klen = node::Buffer::Length(bkey);
+
+  const uint8_t *iv = (uint8_t *)node::Buffer::Data(biv);
+  size_t ilen = node::Buffer::Length(biv);
+
+  if (klen != 32)
+    return Nan::ThrowError("Bad key size.");
+
+  if (ilen != 16)
+    return Nan::ThrowError("Bad IV size.");
+
+  uint32_t olen = BCN_ENCIPHER_SIZE(dlen);
+  uint8_t *out = (uint8_t *)malloc(olen);
+
+  if (out == NULL)
+    return Nan::ThrowError("Could not allocate ciphertext.");
+
+  if (!bcn_encipher(data, dlen, key, iv, out, &olen))
+    return Nan::ThrowTypeError("Encipher failed.");
+
+  info.GetReturnValue().Set(
+    Nan::NewBuffer((char *)out, olen).ToLocalChecked());
+}
+
+NAN_METHOD(decipher) {
+  if (info.Length() < 3)
+    return Nan::ThrowError("decipher() requires arguments.");
+
+  if (!node::Buffer::HasInstance(info[0]))
+    return Nan::ThrowTypeError("First argument must be a Buffer.");
+
+  if (!node::Buffer::HasInstance(info[1]))
+    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+
+  if (!node::Buffer::HasInstance(info[2]))
+    return Nan::ThrowTypeError("Third argument must be a Buffer.");
+
+  v8::Local<v8::Object> bdata = info[0].As<v8::Object>();
+  v8::Local<v8::Object> bkey = info[1].As<v8::Object>();
+  v8::Local<v8::Object> biv = info[2].As<v8::Object>();
+
+  uint8_t *data = (uint8_t *)node::Buffer::Data(bdata);
+  size_t dlen = node::Buffer::Length(bdata);
+
+  const uint8_t *key = (uint8_t *)node::Buffer::Data(bkey);
+  size_t klen = node::Buffer::Length(bkey);
+
+  const uint8_t *iv = (uint8_t *)node::Buffer::Data(biv);
+  size_t ilen = node::Buffer::Length(biv);
+
+  if (klen != 32)
+    return Nan::ThrowError("Bad key size.");
+
+  if (ilen != 16)
+    return Nan::ThrowError("Bad IV size.");
+
+  uint32_t olen = BCN_DECIPHER_SIZE(dlen);
+  uint8_t *out = (uint8_t *)malloc(olen);
+
+  if (out == NULL)
+    return Nan::ThrowError("Could not allocate plaintext.");
+
+  if (!bcn_decipher(data, dlen, key, iv, out, &olen))
+    return Nan::ThrowTypeError("Decipher failed.");
+
+  info.GetReturnValue().Set(
+    Nan::NewBuffer((char *)out, olen).ToLocalChecked());
+}
+
 NAN_MODULE_INIT(init) {
-  Nan::Export(target, "hash", hash);
-  Nan::Export(target, "hmac", hmac);
+  Nan::Export(target, "_hash", hash);
+  Nan::Export(target, "_hmac", hmac);
+  Nan::Export(target, "ripemd160", ripemd160);
+  Nan::Export(target, "sha1", sha1);
   Nan::Export(target, "sha256", sha256);
   Nan::Export(target, "hash160", hash160);
   Nan::Export(target, "hash256", hash256);
   Nan::Export(target, "toBase58", to_base58);
   Nan::Export(target, "fromBase58", from_base58);
   Nan::Export(target, "scrypt", scrypt);
-  Nan::Export(target, "scryptAsync", scrypt_async);
+  Nan::Export(target, "_scryptAsync", scrypt_async);
   Nan::Export(target, "murmur3", murmur3);
   Nan::Export(target, "siphash", siphash);
   Nan::Export(target, "siphash256", siphash256);
   Nan::Export(target, "buildMerkleTree", build_merkle_tree);
   Nan::Export(target, "checkMerkleBranch", check_merkle_branch);
   Nan::Export(target, "cleanse", cleanse);
+  Nan::Export(target, "encipher", encipher);
+  Nan::Export(target, "decipher", decipher);
 
   ChaCha20::Init(target);
   Poly1305::Init(target);

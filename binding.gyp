@@ -10,6 +10,7 @@
       "./src/chacha20.cc",
       "./src/poly1305.cc",
       "./src/hash.cc",
+      "./src/cipher.cc",
       "./src/base58.cc",
       "./src/scrypt.cc",
       "./src/scrypt_async.cc",

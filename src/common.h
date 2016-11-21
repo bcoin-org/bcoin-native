@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define READU32(b) \
   (((uint32_t)((b)[0])) | ((uint32_t)((b)[1]) << 8) \

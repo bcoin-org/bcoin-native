@@ -6,6 +6,8 @@
 
 NAN_METHOD(hash);
 NAN_METHOD(hmac);
+NAN_METHOD(ripemd160);
+NAN_METHOD(sha1);
 NAN_METHOD(sha256);
 NAN_METHOD(hash160);
 NAN_METHOD(hash256);
@@ -19,5 +21,7 @@ NAN_METHOD(siphash256);
 NAN_METHOD(build_merkle_tree);
 NAN_METHOD(check_merkle_branch);
 NAN_METHOD(cleanse);
+NAN_METHOD(encipher);
+NAN_METHOD(decipher);
 
 #endif

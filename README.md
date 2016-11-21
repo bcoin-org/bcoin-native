@@ -10,6 +10,8 @@ Used in [bcoin][bcoin].
 ## Functions
   - `hash(alg, data)`
   - `hmac(alg, data)`
+  - `ripemd160(data)`
+  - `sha1(data)`
   - `sha256(data)`
   - `hash160(data)`
   - `hash256(data)`
@@ -23,6 +25,8 @@ Used in [bcoin][bcoin].
   - `buildMerkleTree(leaves)`
   - `checkMerkleBranch(hash, branch, index)`
   - `cleanse(data)`
+  - `encipher(alg, data, key, iv)`
+  - `decipher(alg, data, key, iv)`
 
 ## Objects
   - `Poly1305()`

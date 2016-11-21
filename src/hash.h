@@ -1,14 +1,7 @@
 #ifndef _BCN_HASH_H
 #define _BCN_HASH_H
-#include "openssl/err.h"
-#include "openssl/evp.h"
-#include "openssl/sha.h"
-#include "openssl/ripemd.h"
-#include "openssl/hmac.h"
 
-#if BCN_USE_HKDF
-#include "openssl/kdf.h"
-#endif
+#include "openssl/evp.h"
 
 #define MAX_HASH_SIZE EVP_MAX_MD_SIZE
 
@@ -55,6 +48,9 @@ bcn_hkdf_expand(
   uint32_t rlen
 );
 #endif
+
+bool
+bcn_sha1(const uint8_t *data, uint32_t len, uint8_t *out);
 
 bool
 bcn_sha256(const uint8_t *data, uint32_t len, uint8_t *out);
