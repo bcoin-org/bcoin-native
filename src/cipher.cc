@@ -126,7 +126,7 @@ bcn_encipher(
   }
 
   // Handle padding on the last block.
-  uint8_t last[16];
+  uint8_t *last = cblock;
   uint32_t left = 16 - trailing;
 
   memcpy(last, pprev, trailing);
