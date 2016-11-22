@@ -94,14 +94,14 @@ bcn_cipher(
 
 bool
 bcn_encipher(
-  uint8_t *data,
-  uint32_t datalen,
+  const uint8_t *data,
+  const uint32_t datalen,
   const uint8_t *key,
   const uint8_t *iv,
   uint8_t *out,
   uint32_t *outlen
 ) {
-  uint8_t *pblock = data;
+  uint8_t *pblock = (uint8_t *)data;
   uint8_t *cblock = out;
   uint8_t *pprev = pblock;
   uint8_t *cprev = (uint8_t *)iv;
@@ -144,15 +144,15 @@ bcn_encipher(
 
 bool
 bcn_decipher(
-  uint8_t *data,
-  uint32_t datalen,
+  const uint8_t *data,
+  const uint32_t datalen,
   const uint8_t *key,
   const uint8_t *iv,
   uint8_t *out,
   uint32_t *outlen
 ) {
   uint8_t *pblock = out;
-  uint8_t *cblock = data;
+  uint8_t *cblock = (uint8_t *)data;
   uint8_t *pprev = pblock;
   uint8_t *cprev = (uint8_t *)iv;
   uint32_t blocks = datalen / 16;
