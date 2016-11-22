@@ -14,7 +14,7 @@ XOR(uint8_t *out, uint8_t *a, uint8_t *b) {
     out[i] = a[i] ^ b[i];
 }
 
-#ifdef BCOIN_USE_CIPHER
+#ifdef BCN_USE_CIPHER
 bool
 bcn_cipher(
   const char *name,

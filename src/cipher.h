@@ -4,7 +4,7 @@
 #define BCN_ENCIPHER_SIZE(len) ((len) + (16 - ((len) % 16)));
 #define BCN_DECIPHER_SIZE(len) (len)
 
-#ifdef BCOIN_USE_CIPHER
+#ifdef BCN_USE_CIPHER
 bool
 bcn_cipher(
   const char *name,
