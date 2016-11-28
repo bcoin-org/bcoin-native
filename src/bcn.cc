@@ -18,6 +18,11 @@
 #include "siphash.h"
 #include "bcn.h"
 
+static const uint8_t ZERO_HASH[] = {
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
 NAN_METHOD(hash) {
   if (info.Length() < 2)
     return Nan::ThrowError("hash() requires arguments.");
@@ -430,28 +435,44 @@ NAN_METHOD(siphash256) {
     Nan::CopyBuffer((char *)&output[0], 8).ToLocalChecked());
 }
 
-NAN_METHOD(build_merkle_tree) {
+NAN_METHOD(create_merkle_tree) {
   if (info.Length() < 1)
-    return Nan::ThrowError("build_merkle_tree() requires arguments.");
+    return Nan::ThrowError("create_merkle_tree() requires arguments.");
 
   if (!info[0]->IsArray())
     return Nan::ThrowTypeError("First argument must be an Array.");
 
-  v8::Local<v8::Array> tree = v8::Local<v8::Array>::Cast(info[0]);
-  uint32_t len = tree->Length();
+  v8::Local<v8::Object> ret = Nan::New<v8::Object>();
+  v8::Local<v8::Array> nodes = v8::Local<v8::Array>::Cast(info[0]);
+  uint32_t len = nodes->Length();
   uint32_t size = len;
-  uint32_t i, j, i2;
+  uint32_t i, j, k;
   uint8_t *left, *right;
   uint8_t hash[32];
+  bool malleated = false;
   v8::Local<v8::Object> lbuf;
   v8::Local<v8::Object> rbuf;
   v8::Local<v8::Object> hbuf;
 
+  Nan::Set(ret,
+    Nan::New<v8::String>("nodes").ToLocalChecked(),
+    nodes);
+
+  if (size == 0) {
+    hbuf = Nan::CopyBuffer((char *)&ZERO_HASH[0], 32).ToLocalChecked();
+    nodes->Set(0, hbuf);
+    Nan::Set(ret,
+      Nan::New<v8::String>("malleated").ToLocalChecked(),
+      Nan::New<v8::Boolean>(malleated));
+    info.GetReturnValue().Set(ret);
+    return;
+  }
+
   for (j = 0; size > 1; size = (size + 1) / 2) {
     for (i = 0; i < size; i += 2) {
-      i2 = std::min(i + 1, size - 1);
-      lbuf = tree->Get(j + i).As<v8::Object>();
-      rbuf = tree->Get(j + i2).As<v8::Object>();
+      k = std::min(i + 1, size - 1);
+      lbuf = nodes->Get(j + i).As<v8::Object>();
+      rbuf = nodes->Get(j + k).As<v8::Object>();
 
       if (!node::Buffer::HasInstance(lbuf) || node::Buffer::Length(lbuf) != 32)
         return Nan::ThrowTypeError("Left node is not a buffer.");
@@ -462,32 +483,30 @@ NAN_METHOD(build_merkle_tree) {
       left = (uint8_t *)node::Buffer::Data(lbuf);
       right = (uint8_t *)node::Buffer::Data(rbuf);
 
-      if (i2 == i + 1 && i2 + 1 == size
+      if (k == i + 1 && k + 1 == size
           && memcmp(left, right, 32) == 0) {
-        info.GetReturnValue().Set(Nan::Null());
-        return;
+        malleated = true;
       }
 
       if (!bcn_hash256_lr(left, right, hash))
         return Nan::ThrowError("Cannot hash nodes.");
 
       hbuf = Nan::CopyBuffer((char *)&hash[0], 32).ToLocalChecked();
-      tree->Set(len++, hbuf);
+      nodes->Set(len++, hbuf);
     }
     j += size;
   }
 
-  if (len == 0) {
-    info.GetReturnValue().Set(Nan::Null());
-    return;
-  }
+  Nan::Set(ret,
+    Nan::New<v8::String>("malleated").ToLocalChecked(),
+    Nan::New<v8::Boolean>(malleated));
 
-  info.GetReturnValue().Set(tree);
+  info.GetReturnValue().Set(ret);
 }
 
-NAN_METHOD(check_merkle_branch) {
+NAN_METHOD(verify_merkle_branch) {
   if (info.Length() < 3)
-    return Nan::ThrowError("check_merkle_branch() requires arguments.");
+    return Nan::ThrowError("verify_merkle_branch() requires arguments.");
 
   if (!node::Buffer::HasInstance(info[0]))
     return Nan::ThrowTypeError("First argument must be a Buffer.");
@@ -662,8 +681,8 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "murmur3", murmur3);
   Nan::Export(target, "siphash", siphash);
   Nan::Export(target, "siphash256", siphash256);
-  Nan::Export(target, "buildMerkleTree", build_merkle_tree);
-  Nan::Export(target, "checkMerkleBranch", check_merkle_branch);
+  Nan::Export(target, "createMerkleTree", create_merkle_tree);
+  Nan::Export(target, "verifyMerkleBranch", verify_merkle_branch);
   Nan::Export(target, "cleanse", cleanse);
   Nan::Export(target, "encipher", encipher);
   Nan::Export(target, "decipher", decipher);
