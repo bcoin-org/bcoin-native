@@ -29,28 +29,60 @@
     "cflags_c": [
       "-std=c99"
     ],
-    "defines": [
-      "POLY1305_64BIT"
-    ],
     "cflags_cc+": [
       "-std=c++0x"
     ],
     "include_dirs": [
-      "/usr/local/include",
-      "<(node_root_dir)/deps/openssl/openssl/include",
       "<!(node -e \"require('nan')\")"
     ],
-    'conditions': [
-				[
-					'OS == "win"', {						
-						'libraries': [
-							'-lC:/OpenSSL-Win64/lib/libeay32.lib',
-						],
-						'include_dirs': [							
-							'C:/OpenSSL-Win64/include',
-						],
-					},
-				],
-			],
+    "variables": {
+      "conditions": [
+        ["OS=='win'", {
+          "conditions": [
+            ["target_arch=='ia32'", {
+              "openssl_root%": "C:/OpenSSL-Win32"
+            }, {
+              "openssl_root%": "C:/OpenSSL-Win64"
+            }]
+          ]
+        }, {
+          "conditions": [
+            ["target_arch=='ia32'", {
+              "openssl_config_path": "<(node_root_dir)/deps/openssl/config/piii"
+            }],
+            ["target_arch=='x64'", {
+              "openssl_config_path": "<(node_root_dir)/deps/openssl/config/k8"
+            }],
+            ["target_arch=='arm'", {
+              "openssl_config_path": "<(node_root_dir)/deps/openssl/config/arm"
+            }]
+          ]
+        }]
+      ]
+    },
+    "conditions": [
+      ["target_arch=='x64' and OS!='win'", {
+        "defines": [
+          "POLY1305_64BIT"
+        ]
+      }, {
+        "defines": [
+          "POLY1305_32BIT"
+        ]
+      }],
+      ["OS=='win'", {
+        "libraries": [
+          "-l<(openssl_root)/lib/libeay32.lib",
+        ],
+        "include_dirs": [
+          "<(openssl_root)/include",
+        ]
+      }, {
+        "include_dirs": [
+          "<(node_root_dir)/deps/openssl/openssl/include",
+          "<(openssl_config_path)"
+        ]
+      }]
+    ]
   }]
 }
