@@ -1,6 +1,6 @@
 #include "scrypt.h"
 extern "C" {
-#include "scrypt/scrypt.h"
+#include "scrypt/crypto_scrypt.h"
 }
 
 bool

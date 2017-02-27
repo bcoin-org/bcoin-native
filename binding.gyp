@@ -6,7 +6,7 @@
       "./src/chacha20-simple/chacha20_simple.c",
       "./src/scrypt/insecure_memzero.c",
       "./src/scrypt/sha256.c",
-      "./src/scrypt/scrypt.c",
+      "./src/scrypt/crypto_scrypt.c",
       "./src/chacha20.cc",
       "./src/poly1305.cc",
       "./src/hash.cc",
@@ -40,5 +40,17 @@
       "<(node_root_dir)/deps/openssl/openssl/include",
       "<!(node -e \"require('nan')\")"
     ],
+    'conditions': [
+				[
+					'OS == "win"', {						
+						'libraries': [
+							'-lC:/OpenSSL-Win64/lib/libeay32.lib',
+						],
+						'include_dirs': [							
+							'C:/OpenSSL-Win64/include',
+						],
+					},
+				],
+			],
   }]
 }
