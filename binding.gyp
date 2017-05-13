@@ -45,18 +45,6 @@
               "openssl_root%": "C:/OpenSSL-Win64"
             }]
           ]
-        }, {
-          "conditions": [
-            ["target_arch=='ia32'", {
-              "openssl_config_path": "<(node_root_dir)/deps/openssl/config/piii"
-            }],
-            ["target_arch=='x64'", {
-              "openssl_config_path": "<(node_root_dir)/deps/openssl/config/k8"
-            }],
-            ["target_arch=='arm'", {
-              "openssl_config_path": "<(node_root_dir)/deps/openssl/config/arm"
-            }]
-          ]
         }]
       ]
     },
@@ -79,8 +67,7 @@
         ]
       }, {
         "include_dirs": [
-          "<(node_root_dir)/deps/openssl/openssl/include",
-          "<(openssl_config_path)"
+          "<(node_root_dir)/deps/openssl/openssl/include"
         ]
       }]
     ]
