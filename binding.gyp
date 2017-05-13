@@ -12,6 +12,7 @@
       "./src/hash.cc",
       "./src/cipher.cc",
       "./src/base58.cc",
+      "./src/bech32.cc",
       "./src/scrypt.cc",
       "./src/scrypt_async.cc",
       "./src/murmur3.cc",

@@ -17,8 +17,10 @@ Used in [bcoin][bcoin].
   - `hash256(data)`
   - `toBase58(data)`
   - `fromBase58(data)`
+  - `toBech32(hrp, version, hash)`
+  - `fromBech32(str)`
   - `scrypt(pass, salt, n, r, p, klen)`
-  - `scryptAsync(pass, salt, n, r, p, klen, callback)`
+  - `scryptAsync(pass, salt, n, r, p, klen)`
   - `murmur3(data, seed)`
   - `siphash(data, key)`
   - `siphash256(data, key)`

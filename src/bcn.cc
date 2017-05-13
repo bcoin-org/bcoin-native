@@ -10,6 +10,7 @@
 #include "hash.h"
 #include "cipher.h"
 #include "base58.h"
+#include "bech32.h"
 #include "chacha20.h"
 #include "poly1305.h"
 #include "scrypt.h"
@@ -231,6 +232,78 @@ NAN_METHOD(from_base58) {
 
   info.GetReturnValue().Set(
     Nan::NewBuffer((char *)data, dlen).ToLocalChecked());
+}
+
+NAN_METHOD(to_bech32) {
+  if (info.Length() < 3)
+    return Nan::ThrowError("to_bech32() requires arguments.");
+
+  if (!info[0]->IsString())
+    return Nan::ThrowError("First argument must be a string.");
+
+  Nan::Utf8String hstr(info[0]);
+
+  if (!info[1]->IsNumber())
+    return Nan::ThrowTypeError("Second argument must be a Number.");
+
+  v8::Local<v8::Value> wnum = v8::Local<v8::Value>::Cast(info[1]);
+
+  v8::Local<v8::Object> wbuf = info[2].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(wbuf))
+    return Nan::ThrowTypeError("Third argument must be a Buffer.");
+
+  const char *hrp = (const char *)*hstr;
+  int32_t witver = (int32_t)v8::Local<v8::Integer>::Cast(wnum)->Value();
+
+  const uint8_t *witprog = (uint8_t *)node::Buffer::Data(wbuf);
+  size_t witprog_len = node::Buffer::Length(wbuf);
+
+  char output[93];
+
+  if (!bcn_encode_bech32(output, hrp, witver, witprog, witprog_len))
+    return Nan::ThrowError("Bech32 encoding failed.");
+
+  info.GetReturnValue().Set(
+    Nan::New<v8::String>((char *)output, strlen((char *)output)).ToLocalChecked());
+}
+
+NAN_METHOD(from_bech32) {
+  if (info.Length() < 2)
+    return Nan::ThrowError("from_bech32() requires arguments.");
+
+  if (!info[0]->IsString())
+    return Nan::ThrowError("First argument must be a string.");
+
+  if (!info[1]->IsObject())
+    return Nan::ThrowError("Second argument must be an object.");
+
+  Nan::Utf8String addr_(info[0]);
+  const char *addr = (const char *)*addr_;
+
+  v8::Local<v8::Object> ret = info[1].As<v8::Object>();
+
+  uint8_t witprog[40];
+  size_t witprog_len;
+  int witver;
+  char hrp[84];
+
+  if (!bcn_decode_bech32(&witver, witprog, &witprog_len, hrp, addr))
+    return Nan::ThrowError("Invalid bech32 string.");
+
+  Nan::Set(ret,
+    Nan::New<v8::String>("hrp").ToLocalChecked(),
+    Nan::New<v8::String>((char *)&hrp[0], strlen((char *)&hrp[0])).ToLocalChecked());
+
+  Nan::Set(ret,
+    Nan::New<v8::String>("version").ToLocalChecked(),
+    Nan::New<v8::Number>(witver));
+
+  Nan::Set(ret,
+    Nan::New<v8::String>("hash").ToLocalChecked(),
+    Nan::CopyBuffer((char *)&witprog[0], witprog_len).ToLocalChecked());
+
+  info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(scrypt) {
@@ -676,6 +749,8 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "hash256", hash256);
   Nan::Export(target, "toBase58", to_base58);
   Nan::Export(target, "fromBase58", from_base58);
+  Nan::Export(target, "toBech32", to_bech32);
+  Nan::Export(target, "_fromBech32", from_bech32);
   Nan::Export(target, "scrypt", scrypt);
   Nan::Export(target, "_scryptAsync", scrypt_async);
   Nan::Export(target, "murmur3", murmur3);

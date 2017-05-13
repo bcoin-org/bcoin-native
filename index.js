@@ -7,6 +7,7 @@
 'use strict';
 
 var bcn = require('bindings')('bcoin-native');
+var DUMMY = new Buffer(0);
 var crypto;
 
 /*
@@ -34,6 +35,25 @@ bcn.scryptAsync = function scryptAsync(passwd, salt, N, r, p, len) {
     bcn._scryptAsync(passwd, salt, N, r, p, len, wrap(resolve, reject));
   });
 };
+
+/*
+ * Wrap
+ */
+
+bcn.fromBech32 = function fromBech32(str) {
+  var result = new AddrResult();
+  return bcn._fromBech32(str, result);
+};
+
+/*
+ * Constructor
+ */
+
+function AddrResult() {
+  this.hrp = '';
+  this.version = 0;
+  this.hash = DUMMY;
+}
 
 /*
  * Helpers

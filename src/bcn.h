@@ -13,6 +13,8 @@ NAN_METHOD(hash160);
 NAN_METHOD(hash256);
 NAN_METHOD(to_base58);
 NAN_METHOD(from_base58);
+NAN_METHOD(to_bech32);
+NAN_METHOD(from_bech32);
 NAN_METHOD(scrypt);
 NAN_METHOD(scrypt_async);
 NAN_METHOD(murmur3);
