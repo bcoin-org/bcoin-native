@@ -162,7 +162,6 @@ int bcn_encode_bech32(char *output, const char *hrp, int witver, const uint8_t *
     uint8_t data[65];
     size_t datalen = 0;
     if (witver > 16) return 0;
-    if (witver == 0 && witprog_len != 20 && witprog_len != 32) return 0;
     if (witprog_len < 2 || witprog_len > 40) return 0;
     data[0] = witver;
     convert_bits(data + 1, &datalen, 5, witprog, witprog_len, 8, 1);

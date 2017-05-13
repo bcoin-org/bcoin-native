@@ -51,8 +51,8 @@ int bcn_encode_bech32(
  *                 contain the witness program bytes.
  *       prog_len: Pointer to a size_t that will be updated to contain the length
  *                 of bytes in prog.
- *       hrp:      Pointer to the null-terminated human readable part that is
- *                 expected (chain/network specific).
+ *       hrp:      Pointer to the null-terminated human readable part that will
+ *                 be updated to contain the string.
  *       addr:     Pointer to the null-terminated address.
  *  Returns 1 if successful.
  */

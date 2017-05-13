@@ -260,12 +260,15 @@ NAN_METHOD(to_bech32) {
   size_t witprog_len = node::Buffer::Length(wbuf);
 
   char output[93];
+  size_t olen;
 
   if (!bcn_encode_bech32(output, hrp, witver, witprog, witprog_len))
     return Nan::ThrowError("Bech32 encoding failed.");
 
+  olen = strlen((char *)output);
+
   info.GetReturnValue().Set(
-    Nan::New<v8::String>((char *)output, strlen((char *)output)).ToLocalChecked());
+    Nan::New<v8::String>((char *)output, olen).ToLocalChecked());
 }
 
 NAN_METHOD(from_bech32) {
@@ -287,13 +290,16 @@ NAN_METHOD(from_bech32) {
   size_t witprog_len;
   int witver;
   char hrp[84];
+  size_t hlen;
 
   if (!bcn_decode_bech32(&witver, witprog, &witprog_len, hrp, addr))
     return Nan::ThrowError("Invalid bech32 string.");
 
+  hlen = strlen((char *)&hrp[0]);
+
   Nan::Set(ret,
     Nan::New<v8::String>("hrp").ToLocalChecked(),
-    Nan::New<v8::String>((char *)&hrp[0], strlen((char *)&hrp[0])).ToLocalChecked());
+    Nan::New<v8::String>((char *)&hrp[0], hlen).ToLocalChecked());
 
   Nan::Set(ret,
     Nan::New<v8::String>("version").ToLocalChecked(),
