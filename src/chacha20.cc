@@ -149,7 +149,7 @@ NAN_METHOD(ChaCha20::Encrypt) {
   ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
-    return Nan::ThrowError("chacha20.update() requires arguments.");
+    return Nan::ThrowError("chacha20.encrypt() requires arguments.");
 
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
