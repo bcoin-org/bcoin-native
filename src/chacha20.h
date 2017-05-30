@@ -15,8 +15,8 @@ public:
 
   ChaCha20();
   ~ChaCha20();
-  void InitKey(v8::Local<v8::Object> &key);
-  void InitIV(v8::Local<v8::Object> &iv, v8::Local<v8::Value> &ctr);
+  void InitKey(char *key, size_t len);
+  void InitIV(char *iv, size_t len, uint64_t ctr);
 
   chacha20_ctx ctx;
 

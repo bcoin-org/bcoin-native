@@ -63,7 +63,7 @@ NAN_METHOD(Poly1305::Init) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -83,7 +83,7 @@ NAN_METHOD(Poly1305::Update) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -109,12 +109,12 @@ NAN_METHOD(Poly1305::Auth) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   v8::Local<v8::Object> kbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(kbuf))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -140,12 +140,12 @@ NAN_METHOD(Poly1305::Verify) {
   v8::Local<v8::Object> abuf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(abuf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   v8::Local<v8::Object> bbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(bbuf))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   const uint8_t *adata = (uint8_t *)node::Buffer::Data(abuf);
   size_t alen = node::Buffer::Length(abuf);

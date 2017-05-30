@@ -35,7 +35,7 @@ NAN_METHOD(hash) {
   v8::Local<v8::Object> buf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -61,12 +61,12 @@ NAN_METHOD(hmac) {
   v8::Local<v8::Object> buf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   v8::Local<v8::Object> kbuf = info[2].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(kbuf))
-    return Nan::ThrowTypeError("Third argument must be a Buffer.");
+    return Nan::ThrowTypeError("Third argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -91,7 +91,7 @@ NAN_METHOD(ripemd160) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -112,7 +112,7 @@ NAN_METHOD(sha1) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -133,7 +133,7 @@ NAN_METHOD(sha256) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -154,7 +154,7 @@ NAN_METHOD(hash160) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -175,7 +175,7 @@ NAN_METHOD(hash256) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -196,7 +196,7 @@ NAN_METHOD(to_base58) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -244,17 +244,15 @@ NAN_METHOD(to_bech32) {
   Nan::Utf8String hstr(info[0]);
 
   if (!info[1]->IsNumber())
-    return Nan::ThrowTypeError("Second argument must be a Number.");
-
-  v8::Local<v8::Value> wnum = v8::Local<v8::Value>::Cast(info[1]);
+    return Nan::ThrowTypeError("Second argument must be a number.");
 
   v8::Local<v8::Object> wbuf = info[2].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(wbuf))
-    return Nan::ThrowTypeError("Third argument must be a Buffer.");
+    return Nan::ThrowTypeError("Third argument must be a buffer.");
 
   const char *hrp = (const char *)*hstr;
-  int32_t witver = (int32_t)v8::Local<v8::Integer>::Cast(wnum)->Value();
+  int32_t witver = (int32_t)info[1]->Int32Value();
 
   const uint8_t *witprog = (uint8_t *)node::Buffer::Data(wbuf);
   size_t witprog_len = node::Buffer::Length(wbuf);
@@ -313,47 +311,39 @@ NAN_METHOD(from_bech32) {
 }
 
 NAN_METHOD(scrypt) {
-  if (info.Length() < 1)
+  if (info.Length() < 6)
     return Nan::ThrowError("scrypt() requires arguments.");
 
   v8::Local<v8::Object> pbuf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(pbuf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   v8::Local<v8::Object> sbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(sbuf))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   if (!info[2]->IsNumber())
-    return Nan::ThrowTypeError("Third argument must be a Number.");
-
-  v8::Local<v8::Value> nval = v8::Local<v8::Value>::Cast(info[2]);
+    return Nan::ThrowTypeError("Third argument must be a number.");
 
   if (!info[3]->IsNumber())
-    return Nan::ThrowTypeError("Fourth argument must be a Number.");
-
-  v8::Local<v8::Value> rval = v8::Local<v8::Value>::Cast(info[3]);
+    return Nan::ThrowTypeError("Fourth argument must be a number.");
 
   if (!info[4]->IsNumber())
-    return Nan::ThrowTypeError("Fifth argument must be a Number.");
-
-  v8::Local<v8::Value> pval = v8::Local<v8::Value>::Cast(info[4]);
+    return Nan::ThrowTypeError("Fifth argument must be a number.");
 
   if (!info[5]->IsNumber())
-    return Nan::ThrowTypeError("Sixth argument must be a Number.");
-
-  v8::Local<v8::Value> kval = v8::Local<v8::Value>::Cast(info[5]);
+    return Nan::ThrowTypeError("Sixth argument must be a number.");
 
   const uint8_t *pass = (const uint8_t *)node::Buffer::Data(pbuf);
   const uint32_t passlen = (const uint32_t)node::Buffer::Length(pbuf);
   const uint8_t *salt = (const uint8_t *)node::Buffer::Data(sbuf);
   size_t saltlen = (size_t)node::Buffer::Length(sbuf);
-  uint64_t N = (uint64_t)v8::Local<v8::Integer>::Cast(nval)->Value();
-  uint64_t r = (uint64_t)v8::Local<v8::Integer>::Cast(rval)->Value();
-  uint64_t p = (uint64_t)v8::Local<v8::Integer>::Cast(pval)->Value();
-  size_t keylen = (size_t)v8::Local<v8::Integer>::Cast(kval)->Value();
+  uint64_t N = (uint64_t)info[2]->IntegerValue();
+  uint64_t r = (uint64_t)info[3]->IntegerValue();
+  uint64_t p = (uint64_t)info[4]->IntegerValue();
+  size_t keylen = (size_t)info[5]->IntegerValue();
 
   uint8_t *key = (uint8_t *)malloc(keylen);
 
@@ -368,38 +358,30 @@ NAN_METHOD(scrypt) {
 }
 
 NAN_METHOD(scrypt_async) {
-  if (info.Length() < 1)
+  if (info.Length() < 6)
     return Nan::ThrowError("scrypt_async() requires arguments.");
 
   v8::Local<v8::Object> pbuf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(pbuf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   v8::Local<v8::Object> sbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(sbuf))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   if (!info[2]->IsNumber())
-    return Nan::ThrowTypeError("Third argument must be a Number.");
-
-  v8::Local<v8::Value> nval = v8::Local<v8::Value>::Cast(info[2]);
+    return Nan::ThrowTypeError("Third argument must be a number.");
 
   if (!info[3]->IsNumber())
-    return Nan::ThrowTypeError("Fourth argument must be a Number.");
-
-  v8::Local<v8::Value> rval = v8::Local<v8::Value>::Cast(info[3]);
+    return Nan::ThrowTypeError("Fourth argument must be a number.");
 
   if (!info[4]->IsNumber())
-    return Nan::ThrowTypeError("Fifth argument must be a Number.");
-
-  v8::Local<v8::Value> pval = v8::Local<v8::Value>::Cast(info[4]);
+    return Nan::ThrowTypeError("Fifth argument must be a number.");
 
   if (!info[5]->IsNumber())
-    return Nan::ThrowTypeError("Sixth argument must be a Number.");
-
-  v8::Local<v8::Value> kval = v8::Local<v8::Value>::Cast(info[5]);
+    return Nan::ThrowTypeError("Sixth argument must be a number.");
 
   if (!info[6]->IsFunction())
     return Nan::ThrowTypeError("Seventh argument must be a Function.");
@@ -410,10 +392,10 @@ NAN_METHOD(scrypt_async) {
   const uint32_t passlen = (const uint32_t)node::Buffer::Length(pbuf);
   const uint8_t *salt = (const uint8_t *)node::Buffer::Data(sbuf);
   size_t saltlen = (size_t)node::Buffer::Length(sbuf);
-  uint64_t N = (uint64_t)v8::Local<v8::Integer>::Cast(nval)->Value();
-  uint64_t r = (uint64_t)v8::Local<v8::Integer>::Cast(rval)->Value();
-  uint64_t p = (uint64_t)v8::Local<v8::Integer>::Cast(pval)->Value();
-  size_t keylen = (size_t)v8::Local<v8::Integer>::Cast(kval)->Value();
+  uint64_t N = (uint64_t)info[2]->IntegerValue();
+  uint64_t r = (uint64_t)info[3]->IntegerValue();
+  uint64_t p = (uint64_t)info[4]->IntegerValue();
+  size_t keylen = (size_t)info[5]->IntegerValue();
 
   ScryptWorker* worker = new ScryptWorker(
     pbuf,
@@ -439,16 +421,14 @@ NAN_METHOD(murmur3) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   if (!info[1]->IsNumber())
-    return Nan::ThrowTypeError("Second argument must be a Number.");
-
-  v8::Local<v8::Value> sval = v8::Local<v8::Value>::Cast(info[1]);
+    return Nan::ThrowTypeError("Second argument must be a number.");
 
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
-  uint32_t seed = (uint32_t)v8::Local<v8::Integer>::Cast(sval)->Value();
+  uint32_t seed = (uint32_t)info[1]->Uint32Value();
 
   info.GetReturnValue().Set(
     Nan::New<v8::Number>((double)bcn_murmur3(data, len, seed)));
@@ -461,12 +441,12 @@ NAN_METHOD(siphash) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   v8::Local<v8::Object> kbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(kbuf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -491,12 +471,12 @@ NAN_METHOD(siphash256) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   v8::Local<v8::Object> kbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(kbuf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -519,10 +499,10 @@ NAN_METHOD(create_merkle_tree) {
     return Nan::ThrowError("create_merkle_tree() requires arguments.");
 
   if (!info[0]->IsArray())
-    return Nan::ThrowTypeError("First argument must be an Array.");
+    return Nan::ThrowTypeError("First argument must be an array.");
 
   v8::Local<v8::Object> ret = Nan::New<v8::Object>();
-  v8::Local<v8::Array> nodes = v8::Local<v8::Array>::Cast(info[0]);
+  v8::Local<v8::Array> nodes = info[0].As<v8::Array>();
   uint32_t len = nodes->Length();
   uint32_t size = len;
   uint32_t i, j, k;
@@ -588,22 +568,21 @@ NAN_METHOD(verify_merkle_branch) {
     return Nan::ThrowError("verify_merkle_branch() requires arguments.");
 
   if (!node::Buffer::HasInstance(info[0]))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   if (!info[1]->IsArray())
-    return Nan::ThrowTypeError("Second argument must be an Array.");
+    return Nan::ThrowTypeError("Second argument must be an array.");
 
   if (!info[2]->IsNumber())
-    return Nan::ThrowTypeError("Second argument must be a Number.");
+    return Nan::ThrowTypeError("Second argument must be a number.");
 
   v8::Local<v8::Object> hbuf = info[0].As<v8::Object>();
-  v8::Local<v8::Array> branch = v8::Local<v8::Array>::Cast(info[1]);
-  v8::Local<v8::Value> ib = v8::Local<v8::Value>::Cast(info[2]);
+  v8::Local<v8::Array> branch = info[1].As<v8::Array>();
 
   if (!node::Buffer::HasInstance(hbuf) || node::Buffer::Length(hbuf) != 32)
     return Nan::ThrowTypeError("Node is not a buffer.");
 
-  uint32_t index = (uint32_t)v8::Local<v8::Integer>::Cast(ib)->Value();
+  uint32_t index = (uint32_t)info[2]->Uint32Value();
   uint32_t len = branch->Length();
   uint32_t i;
   uint8_t hash[32];
@@ -647,7 +626,7 @@ NAN_METHOD(cleanse) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -660,13 +639,13 @@ NAN_METHOD(encipher) {
     return Nan::ThrowError("encipher() requires arguments.");
 
   if (!node::Buffer::HasInstance(info[0]))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   if (!node::Buffer::HasInstance(info[1]))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   if (!node::Buffer::HasInstance(info[2]))
-    return Nan::ThrowTypeError("Third argument must be a Buffer.");
+    return Nan::ThrowTypeError("Third argument must be a buffer.");
 
   v8::Local<v8::Object> bdata = info[0].As<v8::Object>();
   v8::Local<v8::Object> bkey = info[1].As<v8::Object>();
@@ -705,13 +684,13 @@ NAN_METHOD(decipher) {
     return Nan::ThrowError("decipher() requires arguments.");
 
   if (!node::Buffer::HasInstance(info[0]))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   if (!node::Buffer::HasInstance(info[1]))
-    return Nan::ThrowTypeError("Second argument must be a Buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   if (!node::Buffer::HasInstance(info[2]))
-    return Nan::ThrowTypeError("Third argument must be a Buffer.");
+    return Nan::ThrowTypeError("Third argument must be a buffer.");
 
   v8::Local<v8::Object> bdata = info[0].As<v8::Object>();
   v8::Local<v8::Object> bkey = info[1].As<v8::Object>();

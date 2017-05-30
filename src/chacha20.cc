@@ -2,6 +2,8 @@
 
 static Nan::Persistent<v8::FunctionTemplate> chacha20_constructor;
 
+NAN_INLINE static bool IsNull(v8::Local<v8::Value> options);
+
 ChaCha20::ChaCha20() {
   memset(&ctx, 0, sizeof(chacha20_ctx));
   ctx.iv_size = 8;
@@ -34,6 +36,27 @@ ChaCha20::Init(v8::Local<v8::Object> &target) {
   target->Set(Nan::New("ChaCha20").ToLocalChecked(), ctor->GetFunction());
 }
 
+void
+ChaCha20::InitKey(char *key, size_t len) {
+  Nan::HandleScope scope;
+
+  if (len != 32)
+    return Nan::ThrowError("Invalid key size.");
+
+  chacha20_keysetup(&ctx, (uint8_t *)key, 32);
+}
+
+void
+ChaCha20::InitIV(char *iv, size_t len, uint64_t ctr) {
+  Nan::HandleScope scope;
+
+  if (len != 8 && len != 12)
+    return Nan::ThrowError("Invalid IV size.");
+
+  chacha20_ivsetup(&ctx, (uint8_t *)iv, (uint8_t)len);
+  chacha20_counter_set(&ctx, ctr);
+}
+
 NAN_METHOD(ChaCha20::New) {
   if (!info.IsConstructCall()) {
     v8::Local<v8::FunctionTemplate> ctor =
@@ -62,73 +85,32 @@ NAN_METHOD(ChaCha20::Init) {
   if (info.Length() < 1)
     return Nan::ThrowError("chacha20.init() requires arguments.");
 
-  v8::Local<v8::Object> key = info[0].As<v8::Object>();
+  if (!IsNull(info[0])) {
+    v8::Local<v8::Object> key = info[0].As<v8::Object>();
 
-  if (!key->IsNull() && !key->IsUndefined())
-    chacha->InitKey(key);
+    if (!node::Buffer::HasInstance(key))
+      return Nan::ThrowTypeError("First argument must be a buffer.");
 
-  if (info.Length() > 1) {
-    v8::Local<v8::Object> iv = info[1].As<v8::Object>();
-    if (!iv->IsNull() && !iv->IsUndefined()) {
-      v8::Local<v8::Value> num = Nan::New<v8::Number>(0);
-      if (info.Length() > 2 && info[2]->IsNumber())
-        num = v8::Local<v8::Value>::Cast(info[2]);
-      chacha->InitIV(iv, num);
-    }
+    chacha->InitKey(node::Buffer::Data(key), node::Buffer::Length(key));
   }
-}
 
-void
-ChaCha20::InitKey(v8::Local<v8::Object> &key) {
-  Nan::HandleScope scope;
+  if (info.Length() > 1 && !IsNull(info[1])) {
+    v8::Local<v8::Value> iv = info[1].As<v8::Object>();
 
-  if (!node::Buffer::HasInstance(key))
-    return Nan::ThrowTypeError("`key` must be a Buffer.");
+    if (!node::Buffer::HasInstance(iv))
+      return Nan::ThrowTypeError("Second argument must be a buffer.");
 
-  const uint8_t *data = (uint8_t *)node::Buffer::Data(key);
-  size_t len = node::Buffer::Length(key);
+    uint64_t ctr = 0;
 
-  if (len != 32)
-    return Nan::ThrowError("Invalid key size.");
+    if (info.Length() > 2 && !IsNull(info[2])) {
+      if (!info[2]->IsNumber())
+        return Nan::ThrowTypeError("Third argument must be a number.");
 
-  chacha20_keysetup(&ctx, data, 32);
-}
+      ctr = (uint64_t)info[2]->IntegerValue();
+    }
 
-void
-ChaCha20::InitIV(v8::Local<v8::Object> &iv, v8::Local<v8::Value> &num) {
-  Nan::HandleScope scope;
-
-  if (!node::Buffer::HasInstance(iv))
-    return Nan::ThrowTypeError("`iv` must be a Buffer.");
-
-  const uint8_t *data = (uint8_t *)node::Buffer::Data(iv);
-  size_t len = node::Buffer::Length(iv);
-
-  if (len != 8 && len != 12)
-    return Nan::ThrowError("Invalid IV size.");
-
-  uint64_t ctr = 0;
-
-  if (num->IsNumber())
-    ctr = (uint64_t)v8::Local<v8::Integer>::Cast(num)->Value();
-
-  chacha20_ivsetup(&ctx, (uint8_t *)data, (uint8_t)len);
-  chacha20_counter_set(&ctx, ctr);
-}
-
-NAN_METHOD(ChaCha20::InitIV) {
-  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
-
-  if (info.Length() < 1)
-    return Nan::ThrowError("chacha20.initIV() requires arguments.");
-
-  v8::Local<v8::Object> buf = info[0].As<v8::Object>();
-
-  v8::Local<v8::Value> num = Nan::New<v8::Number>(0);
-  if (info.Length() > 1)
-    num = v8::Local<v8::Value>::Cast(info[1]);
-
-  chacha->InitIV(buf, num);
+    chacha->InitIV(node::Buffer::Data(iv), node::Buffer::Length(iv), ctr);
+  }
 }
 
 NAN_METHOD(ChaCha20::InitKey) {
@@ -140,9 +122,32 @@ NAN_METHOD(ChaCha20::InitKey) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
-  chacha->InitKey(buf);
+  chacha->InitKey(node::Buffer::Data(buf), node::Buffer::Length(buf));
+}
+
+NAN_METHOD(ChaCha20::InitIV) {
+  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
+
+  if (info.Length() < 1)
+    return Nan::ThrowError("chacha20.initIV() requires arguments.");
+
+  v8::Local<v8::Object> iv = info[0].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(iv))
+    return Nan::ThrowTypeError("First argument must be a buffer.");
+
+  uint64_t ctr = 0;
+
+  if (info.Length() > 1 && !IsNull(info[1])) {
+    if (!info[1]->IsNumber())
+      return Nan::ThrowTypeError("Second argument must be a number.");
+
+    ctr = (uint64_t)info[1]->IntegerValue();
+  }
+
+  chacha->InitIV(node::Buffer::Data(iv), node::Buffer::Length(iv), ctr);
 }
 
 NAN_METHOD(ChaCha20::Encrypt) {
@@ -154,7 +159,7 @@ NAN_METHOD(ChaCha20::Encrypt) {
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(buf))
-    return Nan::ThrowTypeError("First argument must be a Buffer.");
+    return Nan::ThrowTypeError("First argument must be a buffer.");
 
   const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -170,17 +175,19 @@ NAN_METHOD(ChaCha20::SetCounter) {
   if (info.Length() < 1)
     return Nan::ThrowError("chacha20.setCounter() requires arguments.");
 
-  v8::Local<v8::Object> num = info[0].As<v8::Object>();
-
-  if (!num->IsNumber())
+  if (!info[0]->IsNumber())
     return Nan::ThrowError("First argument must be a number.");
 
-  uint64_t ctr = v8::Local<v8::Integer>::Cast(num)->Value();
-  chacha20_counter_set(&chacha->ctx, ctr);
+  chacha20_counter_set(&chacha->ctx, (uint64_t)info[0]->IntegerValue());
 }
 
 NAN_METHOD(ChaCha20::GetCounter) {
   ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
   info.GetReturnValue().Set(
     Nan::New<v8::Number>((double)chacha20_counter_get(&chacha->ctx)));
+}
+
+NAN_INLINE static bool IsNull(v8::Local<v8::Value> options) {
+  Nan::HandleScope scope;
+  return options->IsNull() || options->IsUndefined();
 }
