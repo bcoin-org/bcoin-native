@@ -31,7 +31,7 @@ ChaCha20::Init(v8::Local<v8::Object> &target) {
   Nan::SetPrototypeMethod(tpl, "getCounter", ChaCha20::GetCounter);
 
   v8::Local<v8::FunctionTemplate> ctor =
-      Nan::New<v8::FunctionTemplate>(chacha20_constructor);
+    Nan::New<v8::FunctionTemplate>(chacha20_constructor);
 
   target->Set(Nan::New("ChaCha20").ToLocalChecked(), ctor->GetFunction());
 }
@@ -60,7 +60,7 @@ ChaCha20::InitIV(char *iv, size_t len, uint64_t ctr) {
 NAN_METHOD(ChaCha20::New) {
   if (!info.IsConstructCall()) {
     v8::Local<v8::FunctionTemplate> ctor =
-        Nan::New<v8::FunctionTemplate>(chacha20_constructor);
+      Nan::New<v8::FunctionTemplate>(chacha20_constructor);
     Nan::MaybeLocal<v8::Object> maybeInstance;
     v8::Local<v8::Object> instance;
 
@@ -74,13 +74,14 @@ NAN_METHOD(ChaCha20::New) {
     info.GetReturnValue().Set(instance);
     return;
   }
-  ChaCha20* chacha = new ChaCha20();
+
+  ChaCha20 *chacha = new ChaCha20();
   chacha->Wrap(info.This());
   info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(ChaCha20::Init) {
-  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
+  ChaCha20 *chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
     return Nan::ThrowError("chacha20.init() requires arguments.");
@@ -114,7 +115,7 @@ NAN_METHOD(ChaCha20::Init) {
 }
 
 NAN_METHOD(ChaCha20::InitKey) {
-  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
+  ChaCha20 *chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
     return Nan::ThrowError("chacha20.initKey() requires arguments.");
@@ -128,7 +129,7 @@ NAN_METHOD(ChaCha20::InitKey) {
 }
 
 NAN_METHOD(ChaCha20::InitIV) {
-  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
+  ChaCha20 *chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
     return Nan::ThrowError("chacha20.initIV() requires arguments.");
@@ -151,7 +152,7 @@ NAN_METHOD(ChaCha20::InitIV) {
 }
 
 NAN_METHOD(ChaCha20::Encrypt) {
-  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
+  ChaCha20 *chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
     return Nan::ThrowError("chacha20.encrypt() requires arguments.");
@@ -170,7 +171,7 @@ NAN_METHOD(ChaCha20::Encrypt) {
 }
 
 NAN_METHOD(ChaCha20::SetCounter) {
-  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
+  ChaCha20 *chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
 
   if (info.Length() < 1)
     return Nan::ThrowError("chacha20.setCounter() requires arguments.");
@@ -182,7 +183,7 @@ NAN_METHOD(ChaCha20::SetCounter) {
 }
 
 NAN_METHOD(ChaCha20::GetCounter) {
-  ChaCha20* chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
+  ChaCha20 *chacha = ObjectWrap::Unwrap<ChaCha20>(info.Holder());
   info.GetReturnValue().Set(
     Nan::New<v8::Number>((double)chacha20_counter_get(&chacha->ctx)));
 }

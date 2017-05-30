@@ -27,7 +27,7 @@ Poly1305::Init(v8::Local<v8::Object> &target) {
   Nan::SetMethod(tpl, "verify", Poly1305::Verify);
 
   v8::Local<v8::FunctionTemplate> ctor =
-      Nan::New<v8::FunctionTemplate>(poly1305_constructor);
+    Nan::New<v8::FunctionTemplate>(poly1305_constructor);
 
   target->Set(Nan::New("Poly1305").ToLocalChecked(), ctor->GetFunction());
 }
@@ -49,13 +49,14 @@ NAN_METHOD(Poly1305::New) {
     info.GetReturnValue().Set(instance);
     return;
   }
-  Poly1305* poly = new Poly1305();
+
+  Poly1305 *poly = new Poly1305();
   poly->Wrap(info.This());
   info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(Poly1305::Init) {
-  Poly1305* poly = ObjectWrap::Unwrap<Poly1305>(info.Holder());
+  Poly1305 *poly = ObjectWrap::Unwrap<Poly1305>(info.Holder());
 
   if (info.Length() < 1)
     return Nan::ThrowError("poly1305.init() requires arguments.");
@@ -75,7 +76,7 @@ NAN_METHOD(Poly1305::Init) {
 }
 
 NAN_METHOD(Poly1305::Update) {
-  Poly1305* poly = ObjectWrap::Unwrap<Poly1305>(info.Holder());
+  Poly1305 *poly = ObjectWrap::Unwrap<Poly1305>(info.Holder());
 
   if (info.Length() < 1)
     return Nan::ThrowError("poly1305.update() requires arguments.");
@@ -92,7 +93,7 @@ NAN_METHOD(Poly1305::Update) {
 }
 
 NAN_METHOD(Poly1305::Finish) {
-  Poly1305* poly = ObjectWrap::Unwrap<Poly1305>(info.Holder());
+  Poly1305 *poly = ObjectWrap::Unwrap<Poly1305>(info.Holder());
 
   uint8_t mac[16];
 
