@@ -8,6 +8,7 @@
       "./src/scrypt/sha256.c",
       "./src/scrypt/crypto_scrypt.c",
       "./src/chacha20.cc",
+      "./src/int64.cc",
       "./src/poly1305.cc",
       "./src/hash.cc",
       "./src/cipher.cc",

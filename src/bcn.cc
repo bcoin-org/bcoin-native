@@ -12,6 +12,7 @@
 #include "base58.h"
 #include "bech32.h"
 #include "chacha20.h"
+#include "int64.h"
 #include "poly1305.h"
 #include "scrypt.h"
 #include "scrypt_async.h"
@@ -749,6 +750,7 @@ NAN_MODULE_INIT(init) {
 
   ChaCha20::Init(target);
   Poly1305::Init(target);
+  Int64::Init(target);
 }
 
 NODE_MODULE(bcn, init)
