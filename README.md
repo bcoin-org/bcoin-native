@@ -27,8 +27,8 @@ Used in [bcoin][bcoin].
   - `buildMerkleTree(leaves)`
   - `checkMerkleBranch(hash, branch, index)`
   - `cleanse(data)`
-  - `encipher(alg, data, key, iv)`
-  - `decipher(alg, data, key, iv)`
+  - `encipher(data, key, iv)`
+  - `decipher(data, key, iv)`
 
 ## Objects
   - `Poly1305()`
@@ -49,8 +49,8 @@ Used in [bcoin][bcoin].
 
 ``` js
 var native = require('bcoin-native');
-var data = new Buffer('01020304', 'hex');
-var key = new Buffer('05060708', 'hex');
+var data = Buffer.from('01020304', 'hex');
+var key = Buffer.from('05060708', 'hex');
 
 var hash1 = native.sha256(data);
 var hash2 = native.hash256(data);

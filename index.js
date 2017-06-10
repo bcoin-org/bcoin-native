@@ -7,7 +7,7 @@
 'use strict';
 
 var bcn = require('bindings')('bcoin-native');
-var DUMMY = new Buffer(0);
+var DUMMY = Buffer.alloc(0);
 var crypto;
 
 /*

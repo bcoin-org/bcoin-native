@@ -61,7 +61,7 @@ function toBase58(data) {
     zeroes++;
   }
 
-  b58 = new Buffer(((data.length * 138 / 100) | 0) + 1);
+  b58 = Buffer.allocUnsafe(((data.length * 138 / 100) | 0) + 1);
   b58.fill(0);
 
   for (; i < data.length; i++) {
@@ -102,7 +102,7 @@ function fromBase58(str) {
     zeroes++;
   }
 
-  b256 = new Buffer(((str.length * 733) / 1000 | 0) + 1);
+  b256 = Buffer.allocUnsafe(((str.length * 733) / 1000 | 0) + 1);
   b256.fill(0);
 
   for (; i < str.length; i++) {
@@ -124,7 +124,7 @@ function fromBase58(str) {
   while (i < b256.length && b256[i] === 0)
     i++;
 
-  out = new Buffer(zeroes + (b256.length - i));
+  out = Buffer.allocUnsafe(zeroes + (b256.length - i));
 
   for (j = 0; j < zeroes; j++)
     out[j] = 0;
@@ -135,12 +135,12 @@ function fromBase58(str) {
   return out;
 }
 
-var b = new Buffer(400);
+var b = Buffer.allocUnsafe(400);
 
 for (var i = 0; i < b.length; i++)
   b[i] = i & 0xff;
 
-var k = new Buffer(40);
+var k = Buffer.allocUnsafe(40);
 
 for (var i = 0; i < k.length; i++)
   k[i] = i & 0xff;
@@ -252,11 +252,11 @@ try {
   var obj = item[1];
 
   var poly = new obj.Poly1305();
-  var key = new Buffer('000102030405060708090a0b0c0d0e0f', 'hex');
+  var key = Buffer.from('000102030405060708090a0b0c0d0e0f', 'hex');
   key = Buffer.concat([key, key]);
   poly.init(key);
 
-  var data = new Buffer(32);
+  var data = Buffer.allocUnsafe(32);
   for (var i = 0; i < 32; i++)
     data[i] = i & 0xff;
 
@@ -313,12 +313,12 @@ try {
   var obj = item[1];
 
   var chacha = new obj.ChaCha20();
-  var iv = new Buffer('0102030405060708', 'hex');
-  var key = new Buffer(32);
+  var iv = Buffer.from('0102030405060708', 'hex');
+  var key = Buffer.allocUnsafe(32);
   for (var i = 0; i < 32; i++)
     key[i] = i;
   chacha.init(key, iv, 0);
-  var data = new Buffer(32);
+  var data = Buffer.allocUnsafe(32);
   for (var i = 0; i < 32; i++)
     data[i] = i;
   var end = bench(name + ' chacha20');

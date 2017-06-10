@@ -19,12 +19,12 @@ function sha256hmac(data, salt) {
   return hmac.update(data).digest();
 }
 
-var b = new Buffer(400);
+var b = Buffer.allocUnsafe(400);
 
 for (var i = 0; i < b.length; i++)
   b[i] = i & 0xff;
 
-var k = new Buffer(40);
+var k = Buffer.allocUnsafe(40);
 
 for (var i = 0; i < k.length; i++)
   k[i] = i & 0xff;
@@ -71,13 +71,13 @@ assert.throws(function() {
   native.hash256();
 });
 
-var result = native.scrypt(new Buffer('password'), new Buffer('NaCl'), 1024, 8, 16, 64);
+var result = native.scrypt(Buffer.from('password'), Buffer.from('NaCl'), 1024, 8, 16, 64);
 assert.equal(result.toString('hex'), ''
   + 'fdbabe1c9d3472007856e7190d01e9fe7c6ad7cbc8237830e773'
   + '76634b3731622eaf30d92e22a3886ff109279d9830dac727afb9'
   + '4a83ee6d8360cbdfa2cc0640');
 
-native.scryptAsync(new Buffer('password'), new Buffer('NaCl'), 1024, 8, 16, 64).then(function(result) {
+native.scryptAsync(Buffer.from('password'), Buffer.from('NaCl'), 1024, 8, 16, 64).then(function(result) {
   assert.equal(result.toString('hex'), ''
     + 'fdbabe1c9d3472007856e7190d01e9fe7c6ad7cbc8237830e773'
     + '76634b3731622eaf30d92e22a3886ff109279d9830dac727afb9'
@@ -132,13 +132,13 @@ var key = k.slice(0, 32);
 var iv = k.slice(0, 8);
 var chacha = new ccp.ChaCha20();
 chacha.init(key, iv);
-var out1 = new Buffer(b);
+var out1 = Buffer.from(b);
 chacha.encrypt(out1);
 
 var key = k.slice(0, 32);
 var iv = k.slice(0, 8);
 var chacha = new native.ChaCha20();
 chacha.init(key, iv);
-var out2 = new Buffer(b);
+var out2 = Buffer.from(b);
 chacha.encrypt(out2);
 assert.deepStrictEqual(out1, out2);
