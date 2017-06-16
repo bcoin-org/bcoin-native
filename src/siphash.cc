@@ -12,12 +12,11 @@
   v2 = ROTL(v2, 32); \
 } while (0)
 
-void
+uint64_t
 bcn_siphash24(
   const uint8_t *data,
   size_t len,
   const uint8_t *key,
-  uint8_t *out,
   uint8_t shift
 ) {
   uint64_t k0 = READU64(key + 0);
@@ -73,15 +72,15 @@ bcn_siphash24(
   v0 ^= v2;
   v0 ^= v3;
 
-  WRITEU64(out, v0);
+  return v0;
 }
 
-void
-bcn_siphash(const uint8_t *data, size_t len, const uint8_t *key, uint8_t *out) {
-  return bcn_siphash24(data, len, key, out, 56);
+uint64_t
+bcn_siphash(const uint8_t *data, size_t len, const uint8_t *key) {
+  return bcn_siphash24(data, len, key, 56);
 }
 
-void
-bcn_siphash256(const uint8_t *data, size_t len, const uint8_t *key, uint8_t *out) {
-  return bcn_siphash24(data, len, key, out, 59);
+uint64_t
+bcn_siphash256(const uint8_t *data, size_t len, const uint8_t *key) {
+  return bcn_siphash24(data, len, key, 59);
 }

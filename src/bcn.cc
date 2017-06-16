@@ -448,6 +448,11 @@ NAN_METHOD(siphash) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a buffer.");
 
+  if (!info[2]->IsObject())
+    return Nan::ThrowError("Third argument must be an object.");
+
+  v8::Local<v8::Object> ret = info[2].As<v8::Object>();
+
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
@@ -457,11 +462,17 @@ NAN_METHOD(siphash) {
   if (klen < 16)
     return Nan::ThrowError("Bad key size for siphash.");
 
-  uint8_t output[8];
-  bcn_siphash(data, len, kdata, output);
+  uint64_t result = bcn_siphash(data, len, kdata);
 
-  info.GetReturnValue().Set(
-    Nan::CopyBuffer((char *)&output[0], 8).ToLocalChecked());
+  Nan::Set(ret,
+    Nan::New<v8::String>("hi").ToLocalChecked(),
+    Nan::New<v8::Integer>((int32_t)(result >> 32)));
+
+  Nan::Set(ret,
+    Nan::New<v8::String>("lo").ToLocalChecked(),
+    Nan::New<v8::Integer>((int32_t)(result & 0xffffffff)));
+
+  info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(siphash256) {
@@ -478,6 +489,11 @@ NAN_METHOD(siphash256) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a buffer.");
 
+  if (!info[2]->IsObject())
+    return Nan::ThrowError("Third argument must be an object.");
+
+  v8::Local<v8::Object> ret = info[2].As<v8::Object>();
+
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
@@ -487,11 +503,17 @@ NAN_METHOD(siphash256) {
   if (klen < 16)
     return Nan::ThrowError("Bad key size for siphash.");
 
-  uint8_t output[8];
-  bcn_siphash256(data, len, kdata, output);
+  uint64_t result = bcn_siphash256(data, len, kdata);
 
-  info.GetReturnValue().Set(
-    Nan::CopyBuffer((char *)&output[0], 8).ToLocalChecked());
+  Nan::Set(ret,
+    Nan::New<v8::String>("hi").ToLocalChecked(),
+    Nan::New<v8::Integer>((int32_t)(result >> 32)));
+
+  Nan::Set(ret,
+    Nan::New<v8::String>("lo").ToLocalChecked(),
+    Nan::New<v8::Integer>((int32_t)(result & 0xffffffff)));
+
+  info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(create_merkle_tree) {
@@ -739,8 +761,8 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "scrypt", scrypt);
   Nan::Export(target, "_scryptAsync", scrypt_async);
   Nan::Export(target, "murmur3", murmur3);
-  Nan::Export(target, "siphash", siphash);
-  Nan::Export(target, "siphash256", siphash256);
+  Nan::Export(target, "_siphash", siphash);
+  Nan::Export(target, "_siphash256", siphash256);
   Nan::Export(target, "createMerkleTree", create_merkle_tree);
   Nan::Export(target, "verifyMerkleBranch", verify_merkle_branch);
   Nan::Export(target, "cleanse", cleanse);

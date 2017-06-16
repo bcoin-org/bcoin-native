@@ -45,6 +45,16 @@ bcn.fromBech32 = function fromBech32(str) {
   return bcn._fromBech32(str, result);
 };
 
+bcn.siphash = function siphash(data, key) {
+  var result = new U64();
+  return bcn._siphash(data, key, result);
+};
+
+bcn.siphash256 = function siphash256(data, key) {
+  var result = new U64();
+  return bcn._siphash256(data, key, result);
+};
+
 /*
  * Constructor
  */
@@ -53,6 +63,11 @@ function AddrResult() {
   this.hrp = '';
   this.version = 0;
   this.hash = DUMMY;
+}
+
+function U64() {
+  this.hi = 0;
+  this.lo = 0;
 }
 
 /*
