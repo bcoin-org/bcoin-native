@@ -435,7 +435,7 @@ NAN_METHOD(murmur3) {
 }
 
 NAN_METHOD(siphash) {
-  if (info.Length() < 2)
+  if (info.Length() < 3)
     return Nan::ThrowError("siphash() requires arguments.");
 
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
@@ -466,17 +466,17 @@ NAN_METHOD(siphash) {
 
   Nan::Set(ret,
     Nan::New<v8::String>("hi").ToLocalChecked(),
-    Nan::New<v8::Integer>((int32_t)(result >> 32)));
+    Nan::New<v8::Int32>((int32_t)(result >> 32)));
 
   Nan::Set(ret,
     Nan::New<v8::String>("lo").ToLocalChecked(),
-    Nan::New<v8::Integer>((int32_t)(result & 0xffffffff)));
+    Nan::New<v8::Int32>((int32_t)(result & 0xffffffff)));
 
   info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(siphash256) {
-  if (info.Length() < 2)
+  if (info.Length() < 3)
     return Nan::ThrowError("siphash256() requires arguments.");
 
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
@@ -507,11 +507,11 @@ NAN_METHOD(siphash256) {
 
   Nan::Set(ret,
     Nan::New<v8::String>("hi").ToLocalChecked(),
-    Nan::New<v8::Integer>((int32_t)(result >> 32)));
+    Nan::New<v8::Int32>((int32_t)(result >> 32)));
 
   Nan::Set(ret,
     Nan::New<v8::String>("lo").ToLocalChecked(),
-    Nan::New<v8::Integer>((int32_t)(result & 0xffffffff)));
+    Nan::New<v8::Int32>((int32_t)(result & 0xffffffff)));
 
   info.GetReturnValue().Set(ret);
 }
