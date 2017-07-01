@@ -6,9 +6,10 @@
 
 'use strict';
 
-var bcn = require('bindings')('bcoin-native');
-var DUMMY = Buffer.alloc(0);
-var crypto;
+const bcn = require('bindings')('bcoin-native');
+const DUMMY = Buffer.alloc(0);
+
+let crypto;
 
 /*
  * Load crypto.
@@ -31,7 +32,7 @@ bcn.hmac = function hmac(alg, data, key) {
  */
 
 bcn.scryptAsync = function scryptAsync(passwd, salt, N, r, p, len) {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     bcn._scryptAsync(passwd, salt, N, r, p, len, wrap(resolve, reject));
   });
 };
@@ -41,18 +42,8 @@ bcn.scryptAsync = function scryptAsync(passwd, salt, N, r, p, len) {
  */
 
 bcn.fromBech32 = function fromBech32(str) {
-  var result = new AddrResult();
+  let result = new AddrResult();
   return bcn._fromBech32(str, result);
-};
-
-bcn.siphash = function siphash(data, key) {
-  var result = new U64();
-  return bcn._siphash(data, key, result);
-};
-
-bcn.siphash256 = function siphash256(data, key) {
-  var result = new U64();
-  return bcn._siphash256(data, key, result);
 };
 
 /*

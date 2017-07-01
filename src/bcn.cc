@@ -435,7 +435,7 @@ NAN_METHOD(murmur3) {
 }
 
 NAN_METHOD(siphash) {
-  if (info.Length() < 3)
+  if (info.Length() < 2)
     return Nan::ThrowError("siphash() requires arguments.");
 
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
@@ -448,11 +448,6 @@ NAN_METHOD(siphash) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a buffer.");
 
-  if (!info[2]->IsObject())
-    return Nan::ThrowError("Third argument must be an object.");
-
-  v8::Local<v8::Object> ret = info[2].As<v8::Object>();
-
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
@@ -464,19 +459,15 @@ NAN_METHOD(siphash) {
 
   uint64_t result = bcn_siphash(data, len, kdata);
 
-  Nan::Set(ret,
-    Nan::New<v8::String>("hi").ToLocalChecked(),
-    Nan::New<v8::Int32>((int32_t)(result >> 32)));
-
-  Nan::Set(ret,
-    Nan::New<v8::String>("lo").ToLocalChecked(),
-    Nan::New<v8::Int32>((int32_t)(result & 0xffffffff)));
+  v8::Local<v8::Array> ret = Nan::New<v8::Array>();
+  ret->Set(0, Nan::New<v8::Int32>((int32_t)(result >> 32)));
+  ret->Set(1, Nan::New<v8::Int32>((int32_t)(result & 0xffffffff)));
 
   info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(siphash256) {
-  if (info.Length() < 3)
+  if (info.Length() < 2)
     return Nan::ThrowError("siphash256() requires arguments.");
 
   v8::Local<v8::Object> buf = info[0].As<v8::Object>();
@@ -489,11 +480,6 @@ NAN_METHOD(siphash256) {
   if (!node::Buffer::HasInstance(kbuf))
     return Nan::ThrowTypeError("First argument must be a buffer.");
 
-  if (!info[2]->IsObject())
-    return Nan::ThrowError("Third argument must be an object.");
-
-  v8::Local<v8::Object> ret = info[2].As<v8::Object>();
-
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
 
@@ -505,13 +491,9 @@ NAN_METHOD(siphash256) {
 
   uint64_t result = bcn_siphash256(data, len, kdata);
 
-  Nan::Set(ret,
-    Nan::New<v8::String>("hi").ToLocalChecked(),
-    Nan::New<v8::Int32>((int32_t)(result >> 32)));
-
-  Nan::Set(ret,
-    Nan::New<v8::String>("lo").ToLocalChecked(),
-    Nan::New<v8::Int32>((int32_t)(result & 0xffffffff)));
+  v8::Local<v8::Array> ret = Nan::New<v8::Array>();
+  ret->Set(0, Nan::New<v8::Int32>((int32_t)(result >> 32)));
+  ret->Set(1, Nan::New<v8::Int32>((int32_t)(result & 0xffffffff)));
 
   info.GetReturnValue().Set(ret);
 }
@@ -523,7 +505,7 @@ NAN_METHOD(create_merkle_tree) {
   if (!info[0]->IsArray())
     return Nan::ThrowTypeError("First argument must be an array.");
 
-  v8::Local<v8::Object> ret = Nan::New<v8::Object>();
+  v8::Local<v8::Array> ret = Nan::New<v8::Array>();
   v8::Local<v8::Array> nodes = info[0].As<v8::Array>();
   uint32_t len = nodes->Length();
   uint32_t size = len;
@@ -535,21 +517,16 @@ NAN_METHOD(create_merkle_tree) {
   v8::Local<v8::Object> rbuf;
   v8::Local<v8::Object> hbuf;
 
-  Nan::Set(ret,
-    Nan::New<v8::String>("nodes").ToLocalChecked(),
-    nodes);
-
   if (size == 0) {
     hbuf = Nan::CopyBuffer((char *)&ZERO_HASH[0], 32).ToLocalChecked();
     nodes->Set(0, hbuf);
-    Nan::Set(ret,
-      Nan::New<v8::String>("malleated").ToLocalChecked(),
-      Nan::New<v8::Boolean>(malleated));
+    ret->Set(0, nodes);
+    ret->Set(1, Nan::New<v8::Boolean>(malleated));
     info.GetReturnValue().Set(ret);
     return;
   }
 
-  for (j = 0; size > 1; size = (size + 1) / 2) {
+  for (j = 0; size > 1; size = (size + 1) >> 1) {
     for (i = 0; i < size; i += 2) {
       k = std::min(i + 1, size - 1);
       lbuf = nodes->Get(j + i).As<v8::Object>();
@@ -578,9 +555,8 @@ NAN_METHOD(create_merkle_tree) {
     j += size;
   }
 
-  Nan::Set(ret,
-    Nan::New<v8::String>("malleated").ToLocalChecked(),
-    Nan::New<v8::Boolean>(malleated));
+  ret->Set(0, nodes);
+  ret->Set(1, Nan::New<v8::Boolean>(malleated));
 
   info.GetReturnValue().Set(ret);
 }
@@ -761,8 +737,8 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "scrypt", scrypt);
   Nan::Export(target, "_scryptAsync", scrypt_async);
   Nan::Export(target, "murmur3", murmur3);
-  Nan::Export(target, "_siphash", siphash);
-  Nan::Export(target, "_siphash256", siphash256);
+  Nan::Export(target, "siphash", siphash);
+  Nan::Export(target, "siphash256", siphash256);
   Nan::Export(target, "createMerkleTree", create_merkle_tree);
   Nan::Export(target, "verifyMerkleBranch", verify_merkle_branch);
   Nan::Export(target, "cleanse", cleanse);
