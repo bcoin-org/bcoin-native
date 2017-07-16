@@ -189,6 +189,38 @@ NAN_METHOD(hash256) {
     Nan::CopyBuffer((char *)&output[0], 32).ToLocalChecked());
 }
 
+NAN_METHOD(root256) {
+  if (info.Length() < 2)
+    return Nan::ThrowError("root256() requires arguments.");
+
+  v8::Local<v8::Object> lbuf = info[0].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(lbuf))
+    return Nan::ThrowTypeError("First argument must be a buffer.");
+
+  v8::Local<v8::Object> rbuf = info[1].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(rbuf))
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
+
+  const uint8_t *left = (uint8_t *)node::Buffer::Data(lbuf);
+  size_t llen = node::Buffer::Length(lbuf);
+
+  const uint8_t *right = (uint8_t *)node::Buffer::Data(rbuf);
+  size_t rlen = node::Buffer::Length(rbuf);
+
+  if (llen != 32 || rlen != 32)
+    return Nan::ThrowTypeError("Invalid length.");
+
+  uint8_t output[32];
+
+  if (!bcn_hash256_lr(left, right, output))
+    return Nan::ThrowError("Cannot hash nodes.");
+
+  info.GetReturnValue().Set(
+    Nan::CopyBuffer((char *)&output[0], 32).ToLocalChecked());
+}
+
 NAN_METHOD(to_base58) {
   if (info.Length() < 1)
     return Nan::ThrowError("to_base58() requires arguments.");
@@ -730,6 +762,7 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "sha256", sha256);
   Nan::Export(target, "hash160", hash160);
   Nan::Export(target, "hash256", hash256);
+  Nan::Export(target, "root256", root256);
   Nan::Export(target, "toBase58", to_base58);
   Nan::Export(target, "fromBase58", from_base58);
   Nan::Export(target, "toBech32", to_bech32);

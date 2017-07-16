@@ -11,6 +11,7 @@ NAN_METHOD(sha1);
 NAN_METHOD(sha256);
 NAN_METHOD(hash160);
 NAN_METHOD(hash256);
+NAN_METHOD(root256);
 NAN_METHOD(to_base58);
 NAN_METHOD(from_base58);
 NAN_METHOD(to_bech32);

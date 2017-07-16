@@ -15,6 +15,7 @@ Used in [bcoin][bcoin].
   - `sha256(data)`
   - `hash160(data)`
   - `hash256(data)`
+  - `root256(left, right)`
   - `toBase58(data)`
   - `fromBase58(data)`
   - `toBech32(hrp, version, hash)`
