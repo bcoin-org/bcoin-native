@@ -65,7 +65,7 @@ bool
 bcn_hash256(const uint8_t *data, uint32_t len, uint8_t *out);
 
 bool
-bcn_hash256_lr(const uint8_t *left, const uint8_t *right, uint8_t *out);
+bcn_root256(const uint8_t *left, const uint8_t *right, uint8_t *out);
 
 bool
 bcn_pbkdf2(

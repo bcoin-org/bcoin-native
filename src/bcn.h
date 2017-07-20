@@ -21,8 +21,6 @@ NAN_METHOD(scrypt_async);
 NAN_METHOD(murmur3);
 NAN_METHOD(siphash);
 NAN_METHOD(siphash256);
-NAN_METHOD(create_merkle_tree);
-NAN_METHOD(verify_merkle_branch);
 NAN_METHOD(cleanse);
 NAN_METHOD(encipher);
 NAN_METHOD(decipher);

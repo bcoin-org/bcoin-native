@@ -25,8 +25,6 @@ Used in [bcoin][bcoin].
   - `murmur3(data, seed)`
   - `siphash(data, key)`
   - `siphash256(data, key)`
-  - `buildMerkleTree(leaves)`
-  - `checkMerkleBranch(hash, branch, index)`
   - `cleanse(data)`
   - `encipher(data, key, iv)`
   - `decipher(data, key, iv)`
