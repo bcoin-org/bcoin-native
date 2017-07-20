@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "hash.h"
+#include "digest.h"
 #include "common.h"
 #include "openssl/err.h"
 #include "openssl/evp.h"

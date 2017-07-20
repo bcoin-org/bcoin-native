@@ -9,7 +9,7 @@
       "./src/scrypt/crypto_scrypt.c",
       "./src/chacha20.cc",
       "./src/poly1305.cc",
-      "./src/hash.cc",
+      "./src/digest.cc",
       "./src/cipher.cc",
       "./src/base58.cc",
       "./src/bech32.cc",

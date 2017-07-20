@@ -7,7 +7,7 @@
 #include <nan.h>
 
 #include "common.h"
-#include "hash.h"
+#include "digest.h"
 #include "cipher.h"
 #include "base58.h"
 #include "bech32.h"

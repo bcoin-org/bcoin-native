@@ -1,5 +1,5 @@
-#ifndef _BCN_HASH_H
-#define _BCN_HASH_H
+#ifndef _BCN_DIGEST_H
+#define _BCN_DIGEST_H
 
 #include "openssl/evp.h"
 
