@@ -21,6 +21,7 @@
     ],
     "cflags": [
       "-Wall",
+      "-Wno-implicit-fallthrough",
       "-Wno-maybe-uninitialized",
       "-Wno-uninitialized",
       "-Wno-unused-function",
