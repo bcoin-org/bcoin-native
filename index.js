@@ -42,8 +42,7 @@ bcn.scryptAsync = function scryptAsync(passwd, salt, N, r, p, len) {
  */
 
 bcn.fromBech32 = function fromBech32(str) {
-  let result = new AddrResult();
-  return bcn._fromBech32(str, result);
+  return bcn._fromBech32(str, new AddrResult());
 };
 
 /*
@@ -54,11 +53,6 @@ function AddrResult() {
   this.hrp = '';
   this.version = 0;
   this.hash = DUMMY;
-}
-
-function U64() {
-  this.hi = 0;
-  this.lo = 0;
 }
 
 /*

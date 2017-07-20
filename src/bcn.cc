@@ -19,11 +19,6 @@
 #include "siphash.h"
 #include "bcn.h"
 
-static const uint8_t ZERO_HASH[] = {
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
-
 NAN_METHOD(hash) {
   if (info.Length() < 2)
     return Nan::ThrowError("hash() requires arguments.");
