@@ -25,6 +25,8 @@ Used in [bcoin][bcoin].
   - `murmur3(data, seed)`
   - `siphash(data, key)`
   - `siphash256(data, key)`
+  - `siphash32(nonce, key)`
+  - `siphash64(hi, lo, key)`
   - `cleanse(data)`
   - `encipher(data, key, iv)`
   - `decipher(data, key, iv)`

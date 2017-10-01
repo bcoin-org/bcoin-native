@@ -473,7 +473,7 @@ NAN_METHOD(siphash) {
   v8::Local<v8::Object> kbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(kbuf))
-    return Nan::ThrowTypeError("First argument must be a buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -505,7 +505,7 @@ NAN_METHOD(siphash256) {
   v8::Local<v8::Object> kbuf = info[1].As<v8::Object>();
 
   if (!node::Buffer::HasInstance(kbuf))
-    return Nan::ThrowTypeError("First argument must be a buffer.");
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
 
   const uint8_t *data = (const uint8_t *)node::Buffer::Data(buf);
   size_t len = node::Buffer::Length(buf);
@@ -517,6 +517,65 @@ NAN_METHOD(siphash256) {
     return Nan::ThrowError("Bad key size for siphash.");
 
   uint64_t result = bcn_siphash256(data, len, kdata);
+
+  v8::Local<v8::Array> ret = Nan::New<v8::Array>();
+  ret->Set(0, Nan::New<v8::Int32>((int32_t)(result >> 32)));
+  ret->Set(1, Nan::New<v8::Int32>((int32_t)(result & 0xffffffff)));
+
+  info.GetReturnValue().Set(ret);
+}
+
+NAN_METHOD(siphash32) {
+  if (info.Length() < 2)
+    return Nan::ThrowError("siphash32() requires arguments.");
+
+  if (!info[0]->IsNumber())
+    return Nan::ThrowTypeError("First argument must be a number.");
+
+  v8::Local<v8::Object> kbuf = info[1].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(kbuf))
+    return Nan::ThrowTypeError("Second argument must be a buffer.");
+
+  uint32_t num = info[0]->Uint32Value();
+
+  const uint8_t *kdata = (const uint8_t *)node::Buffer::Data(kbuf);
+  size_t klen = node::Buffer::Length(kbuf);
+
+  if (klen < 16)
+    return Nan::ThrowError("Bad key size for siphash.");
+
+  uint32_t result = bcn_siphash32(num, kdata);
+
+  info.GetReturnValue().Set(Nan::New<v8::Int32>(result));
+}
+
+NAN_METHOD(siphash64) {
+  if (info.Length() < 3)
+    return Nan::ThrowError("siphash64() requires arguments.");
+
+  if (!info[0]->IsNumber())
+    return Nan::ThrowTypeError("First argument must be a number.");
+
+  if (!info[1]->IsNumber())
+    return Nan::ThrowTypeError("Second argument must be a number.");
+
+  v8::Local<v8::Object> kbuf = info[2].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(kbuf))
+    return Nan::ThrowTypeError("Third argument must be a buffer.");
+
+  uint32_t hi = info[0]->Uint32Value();
+  uint32_t lo = info[1]->Uint32Value();
+  uint64_t num = ((uint64_t)hi << 32) | lo;
+
+  const uint8_t *kdata = (const uint8_t *)node::Buffer::Data(kbuf);
+  size_t klen = node::Buffer::Length(kbuf);
+
+  if (klen < 16)
+    return Nan::ThrowError("Bad key size for siphash.");
+
+  uint64_t result = bcn_siphash64(num, kdata);
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>();
   ret->Set(0, Nan::New<v8::Int32>((int32_t)(result >> 32)));
@@ -648,6 +707,8 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "murmur3", murmur3);
   Nan::Export(target, "siphash", siphash);
   Nan::Export(target, "siphash256", siphash256);
+  Nan::Export(target, "siphash32", siphash32);
+  Nan::Export(target, "siphash64", siphash64);
   Nan::Export(target, "cleanse", cleanse);
   Nan::Export(target, "encipher", encipher);
   Nan::Export(target, "decipher", decipher);

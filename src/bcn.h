@@ -21,6 +21,8 @@ NAN_METHOD(scrypt_async);
 NAN_METHOD(murmur3);
 NAN_METHOD(siphash);
 NAN_METHOD(siphash256);
+NAN_METHOD(siphash32);
+NAN_METHOD(siphash64);
 NAN_METHOD(cleanse);
 NAN_METHOD(encipher);
 NAN_METHOD(decipher);
