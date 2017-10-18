@@ -16,6 +16,8 @@ Used in [bcoin][bcoin].
   - `hash160(data)`
   - `hash256(data)`
   - `root256(left, right)`
+  - `sha3(data)`
+  - `blake2b(data, len, key)`
   - `toBase58(data)`
   - `fromBase58(data)`
   - `toBech32(hrp, version, hash)`
@@ -49,15 +51,15 @@ Used in [bcoin][bcoin].
 ## Usage
 
 ``` js
-var native = require('bcoin-native');
-var data = Buffer.from('01020304', 'hex');
-var key = Buffer.from('05060708', 'hex');
+const native = require('bcoin-native');
+const data = Buffer.from('01020304', 'hex');
+const key = Buffer.from('05060708', 'hex');
 
-var hash1 = native.sha256(data);
-var hash2 = native.hash256(data);
+const hash1 = native.sha256(data);
+const hash2 = native.hash256(data);
 
-console.log('sha256: %s', hash1.toString('hex'));
-console.log('double sha256: %s', hash2.toString('hex'));
+console.log('SHA256: %s', hash1.toString('hex'));
+console.log('Double SHA256: %s', hash2.toString('hex'));
 ```
 
 Outputs:

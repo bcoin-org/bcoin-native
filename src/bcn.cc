@@ -216,6 +216,72 @@ NAN_METHOD(root256) {
     Nan::CopyBuffer((char *)&output[0], 32).ToLocalChecked());
 }
 
+NAN_METHOD(sha3) {
+  if (info.Length() < 1)
+    return Nan::ThrowError("sha3() requires arguments.");
+
+  v8::Local<v8::Object> buf = info[0].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(buf))
+    return Nan::ThrowTypeError("First argument must be a buffer.");
+
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
+  size_t len = node::Buffer::Length(buf);
+
+  uint8_t output[32];
+
+  if (!bcn_sha3(data, len, output))
+    return Nan::ThrowError("Could not allocate context.");
+
+  info.GetReturnValue().Set(
+    Nan::CopyBuffer((char *)&output[0], 32).ToLocalChecked());
+}
+
+NAN_METHOD(blake2b) {
+  if (info.Length() < 1)
+    return Nan::ThrowError("blake2b() requires arguments.");
+
+  v8::Local<v8::Object> buf = info[0].As<v8::Object>();
+
+  if (!node::Buffer::HasInstance(buf))
+    return Nan::ThrowTypeError("First argument must be a buffer.");
+
+  const uint8_t *data = (uint8_t *)node::Buffer::Data(buf);
+  size_t len = node::Buffer::Length(buf);
+
+  uint32_t outlen = 32;
+  uint8_t *key = NULL;
+  size_t keylen = 0;
+
+  if (info.Length() > 1) {
+    if (!info[1]->IsNumber())
+      return Nan::ThrowTypeError("Second argument must be a number.");
+
+    outlen = info[1]->Uint32Value();
+
+    if (outlen == 0 || outlen > 64)
+      return Nan::ThrowTypeError("Second argument must be a number.");
+  }
+
+  if (info.Length() > 2) {
+    v8::Local<v8::Object> kbuf = info[2].As<v8::Object>();
+
+    if (!node::Buffer::HasInstance(kbuf))
+      return Nan::ThrowTypeError("Third argument must be a buffer.");
+
+    key = (uint8_t *)node::Buffer::Data(kbuf);
+    keylen = node::Buffer::Length(kbuf);
+  }
+
+  uint8_t output[outlen];
+
+  if (!bcn_blake2b(data, len, key, keylen, output, outlen))
+    return Nan::ThrowError("Could not allocate context.");
+
+  info.GetReturnValue().Set(
+    Nan::CopyBuffer((char *)&output[0], outlen).ToLocalChecked());
+}
+
 NAN_METHOD(to_base58) {
   if (info.Length() < 1)
     return Nan::ThrowError("to_base58() requires arguments.");
@@ -698,6 +764,8 @@ NAN_MODULE_INIT(init) {
   Nan::Export(target, "hash160", hash160);
   Nan::Export(target, "hash256", hash256);
   Nan::Export(target, "root256", root256);
+  Nan::Export(target, "sha3", sha3);
+  Nan::Export(target, "blake2b", blake2b);
   Nan::Export(target, "toBase58", to_base58);
   Nan::Export(target, "fromBase58", from_base58);
   Nan::Export(target, "toBech32", to_bech32);

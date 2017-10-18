@@ -7,6 +7,8 @@
 #include "openssl/sha.h"
 #include "openssl/ripemd.h"
 #include "openssl/hmac.h"
+#include "sha3/sha3.h"
+#include "blake2/blake2.h"
 
 #if BCN_USE_HKDF
 #include "openssl/kdf.h"
@@ -201,6 +203,93 @@ bcn_root256(const uint8_t *left, const uint8_t *right, uint8_t *out) {
   SHA256_Init(&ctx);
   SHA256_Update(&ctx, out, 32);
   SHA256_Final(out, &ctx);
+
+  return true;
+}
+
+bool
+bcn_sha3(const uint8_t *data, uint32_t len, uint8_t *out) {
+  sha3_ctx ctx;
+
+  sha3_256_init(&ctx);
+  sha3_update(&ctx, data, len);
+  sha3_final(&ctx, out);
+
+  return true;
+}
+
+bool
+bcn_root256_sha3(const uint8_t *left, const uint8_t *right, uint8_t *out) {
+  sha3_ctx ctx;
+
+  sha3_256_init(&ctx);
+  sha3_update(&ctx, left, 32);
+  sha3_update(&ctx, right, 32);
+  sha3_final(&ctx, out);
+
+  return true;
+}
+
+bool
+bcn_blake2b(
+  const uint8_t *in, uint32_t inlen,
+  const uint8_t *key, uint32_t keylen,
+  uint8_t *out, uint32_t outlen
+) {
+  if (in == NULL && inlen > 0)
+    return false;
+
+  if (out == NULL)
+    return false;
+
+  if (key == NULL && keylen > 0)
+    return false;
+
+  if (outlen == 0 || outlen > BLAKE2B_OUTBYTES)
+    return false;
+
+  if (keylen > BLAKE2B_KEYBYTES)
+    return false;
+
+  blake2b_ctx ctx;
+
+  if (keylen > 0) {
+    if (blake2b_init_key(&ctx, outlen, key, keylen) < 0)
+      return false;
+  } else {
+    if (blake2b_init(&ctx, outlen) < 0)
+      return false;
+  }
+
+  blake2b_update(&ctx, in, inlen);
+  blake2b_final(&ctx, out, outlen);
+
+  return true;
+}
+
+bool
+bcn_root256_blake2b(const uint8_t *left, const uint8_t *right, uint8_t *out) {
+  blake2b_ctx ctx;
+
+  blake2b_256_init(&ctx, 32);
+  blake2b_update(&ctx, left, 32);
+  blake2b_update(&ctx, right, 32);
+  blake2b_final(&ctx, out, 32);
+
+  return true;
+}
+
+bool
+bcn_blake2b_key(
+  const uint8_t *data, uint32_t len,
+  uint8_t *key, uint32_t keylen,
+  uint8_t *out, uint32_t outlen
+) {
+  blake2b_ctx ctx;
+
+  blake2b_init_key(&ctx, outlen, key, keylen);
+  blake2b_update(&ctx, data, len);
+  blake2b_final(&ctx, out, outlen);
 
   return true;
 }

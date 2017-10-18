@@ -68,6 +68,22 @@ bool
 bcn_root256(const uint8_t *left, const uint8_t *right, uint8_t *out);
 
 bool
+bcn_sha3(const uint8_t *data, uint32_t len, uint8_t *out);
+
+bool
+bcn_root256_sha3(const uint8_t *left, const uint8_t *right, uint8_t *out);
+
+bool
+bcn_blake2b(
+  const uint8_t *in, uint32_t inlen,
+  const uint8_t *key, uint32_t keylen,
+  uint8_t *out, uint32_t outlen
+);
+
+bool
+bcn_root256_blake2b(const uint8_t *left, const uint8_t *right, uint8_t *out);
+
+bool
 bcn_pbkdf2(
   const char *name,
   const uint8_t *data,

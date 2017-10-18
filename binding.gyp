@@ -1,4 +1,8 @@
 {
+  "variables": {
+    "bcn_byteorder%":
+      "<!(python -c 'from __future__ import print_function; import sys; print(sys.byteorder)')",
+  },
   "targets": [{
     "target_name": "bcoin-native",
     "sources": [
@@ -7,6 +11,9 @@
       "./src/scrypt/insecure_memzero.c",
       "./src/scrypt/sha256.c",
       "./src/scrypt/crypto_scrypt.c",
+      "./src/sha3/byte_order.c",
+      "./src/sha3/sha3.c",
+      "./src/blake2/blake2b.c",
       "./src/chacha20.cc",
       "./src/poly1305.cc",
       "./src/digest.cc",
@@ -51,6 +58,15 @@
       ]
     },
     "conditions": [
+      ["bcn_byteorder=='little'", {
+        "defines": [
+          "BCN_LITTLE_ENDIAN"
+        ]
+      }, {
+        "defines": [
+          "BCN_BIG_ENDIAN"
+        ]
+      }],
       ["target_arch=='x64' and OS!='win'", {
         "defines": [
           "POLY1305_64BIT"
